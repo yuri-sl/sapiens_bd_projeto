@@ -1,29 +1,135 @@
-# Create T3 App
+Here's a **complete `README.md`** template in **Portuguese** for your T3 Stack project (ready for GitHub), covering setup, environment variables, database configuration, and team collaboration:
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+---
 
-## What's next? How do I make an app with this?
+# **📌 Nome do Projeto**  
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+*Uma aplicação moderna com Next.js, TypeScript, Prisma e tRPC*  
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+---
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## **🚀 Começando**  
 
-## Learn More
+Siga estas instruções para configurar o projeto localmente.  
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+### **Pré-requisitos**  
+- Node.js v18+  
+- Banco de dados MySQL (ou Docker)  
+- Git  
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+---
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+## **🛠 Configuração**  
 
-## How do I deploy this?
+### **1. Clonar o repositório**  
+```bash
+git clone https://github.com/seu-usuario/nome-do-repo.git
+cd nome-do-repo
+```
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+### **2. Instalar dependências**  
+```bash
+npm install
+# ou
+pnpm install
+```
+
+### **3. Configurar variáveis de ambiente**  
+1. Copie o arquivo modelo `.env.example` para `.env`:  
+   ```bash
+   cp .env.example .env
+   ```
+2. Edite o `.env` com suas credenciais:  
+   ```env
+   # Exemplo (NÃO use esses valores!)
+   DATABASE_URL="mysql://usuario:senha@localhost:3306/nome_do_banco"
+   NEXTAUTH_SECRET="gerar-um-segredo-forte-aqui"
+   ```
+
+### **4. Banco de Dados**  
+#### **Opção A: Local (MySQL)**  
+1. Crie o banco manualmente:  
+   ```sql
+   CREATE DATABASE nome_do_banco;
+   ```
+2. Execute as migrações:  
+   ```bash
+   npx prisma migrate dev
+   ```
+
+#### **Opção B: Docker (Recomendado para time)**  
+```bash
+docker-compose up -d  # Inicia MySQL e adminer (opcional)
+npx prisma migrate dev
+```
+
+### **5. Iniciar o servidor**  
+```bash
+npm run dev
+```
+Acesse: [http://localhost:3000](http://localhost:3000)  
+
+---
+
+## **🔧 Variáveis de Ambiente**  
+| Variável               | Exemplo                          | Obrigatório? |  
+|------------------------|----------------------------------|--------------|  
+| `DATABASE_URL`         | `mysql://user:pass@localhost:3306/db` | ✅ Sim |  
+| `NEXTAUTH_SECRET`      | `openssl rand -hex 32`           | ✅ Sim |  
+| `NEXTAUTH_URL`         | `http://localhost:3000`          | ❌ Não |  
+
+**Nota:** Peça as credenciais ao líder do projeto.  
+
+---
+
+## **📦 Estrutura do Projeto**  
+```
+.
+├── prisma/
+│   └── schema.prisma    # Modelos do banco
+├── src/
+│   ├── pages/           # Rotas Next.js
+│   └── server/          # tRPC e lógica de backend
+└── .env.example         # Modelo para configuração
+```
+
+---
+
+## **❗ Problemas Comuns**  
+- **Erro de conexão com o banco**: Verifique `DATABASE_URL` e se o MySQL está rodando.  
+- **Migrações falhando**: Execute `npx prisma generate` antes.  
+- **Variáveis de ambiente não carregadas**: Reinicie o servidor após editar `.env`.  
+
+---
+
+## **🤝 Contribuição**  
+1. Crie uma branch: `git checkout -b feature/nova-funcionalidade`  
+2. Commit: `git commit -m "Adiciona recurso X"`  
+3. Push: `git push origin feature/nova-funcionalidade`  
+
+---
+
+## **📄 Licença**  
+[MIT](https://choosealicense.com/licenses/mit/)  
+
+---
+
+### **🔐 Segurança**  
+- **NUNCA** compartilhe o arquivo `.env` ou credenciais reais no repositório.  
+- Adicione `.env` ao `.gitignore`:  
+  ```bash
+  echo ".env" >> .gitignore
+  ```
+
+---
+
+**Pronto para desenvolver!** 🎉  
+Para dúvidas, consulte a [documentação do T3 Stack](https://create.t3.gg/).  
+
+---
+
+### **Como Personalizar**  
+- Substitua `nome-do-projeto`, `seu-usuario/nome-do-repo`, e credenciais de exemplo.  
+- Adicione seções extras (ex: testes, Docker, CI/CD) conforme necessário.  
+
+Quer que eu adapte algo específico para seu projeto? 😊
