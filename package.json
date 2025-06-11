@@ -20,6 +20,9 @@
     "start": "next start",
     "typecheck": "tsc --noEmit"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "dependencies": {
     "@prisma/client": "^6.5.0",
     "@t3-oss/env-nextjs": "^0.12.0",
