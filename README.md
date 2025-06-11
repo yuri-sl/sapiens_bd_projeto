@@ -50,13 +50,25 @@ pnpm install
 #### **Opção A: Local (MySQL)**  
 1. Crie o banco manualmente:  
    ```sql
-   CREATE DATABASE nome_do_banco;
+   CREATE DATABASE sapiens_db;
+   CREATE USER sapiens_user WITH PASSWORD 'senha123';
+   GRANT ALL PRIVILEGES ON DATABASE sapiens_db TO sapiens_user;
+   ALTER USER sapiens_user WITH SUPERUSER; -- Opcional, se precisar de privilégios elevados
    ```
+2. Troque o .env:
+````
+   DATABASE_URL="postgresql://sapiens_user:senha123@localhost:5432/sapiens_db?schema=public"
+````
 2. Execute as migrações:  
    ```bash
    npx prisma migrate dev
    ```
+### **5. Iniciar o servidor**  
+```bash
+npm run dev
+```
 
+###IGNOREM---
 #### **Opção B: Docker (Recomendado para time)**  
 ```bash
 docker-compose up -d  # Inicia MySQL e adminer (opcional)
