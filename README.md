@@ -14,7 +14,7 @@ Siga estas instruções para configurar o projeto localmente.
 
 ### **Pré-requisitos**  
 - Node.js v18+  
-- Banco de dados MySQL (ou Docker)  
+- Banco de dados Postgresql (ou Docker)  
 - Git  
 
 ---
