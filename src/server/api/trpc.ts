@@ -11,7 +11,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "~/server/db";
-
+import { appRouter } from "./root";
 /**
  * 1. CONTEXT
  *
