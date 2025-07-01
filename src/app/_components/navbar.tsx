@@ -23,6 +23,9 @@ export default function Navbar() {
           </a>
         </li>
         <li>
+        <button className="bg-red-600 rounded-lg w-56 h-10">Sair do Sistema</button>
+        </li>
+        <li>
           <a href="#">
             <img src="/assets/user-128.png" className="w-24" alt="User Logo" />
           </a>
