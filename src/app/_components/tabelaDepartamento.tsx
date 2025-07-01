@@ -1,7 +1,7 @@
 import React from "react";
 import { api } from "~/trpc/react";
 
-export default function Tabela() {
+export default function TabelaDepartamento() {
   const { data, isLoading } = api.departamento.listar.useQuery();
 
   if (isLoading) return <p>Carregando...</p>;
@@ -33,7 +33,7 @@ export default function Tabela() {
           </tr>
         </thead>
         <tbody>
-          {data?.map((d) => (
+          {data?.map((d: { ID_dep: number; Nome: String }) => (
             <tr key={d.ID_dep}>
               <td className="px-4 py-2">
                 <input
@@ -46,15 +46,30 @@ export default function Tabela() {
               <td className="px-4 py-2">Pesquisas de lagostas</td>
               <td className="px-4 py-2">marcelo lagosta</td>
               <td className="px-4 py-2">Ciencias da Lagostas</td>
-              <td className="px-4 py-2">Editar</td>
-              <td className="px-4 py-2">Deletar</td>
+              <td className="px-4 py-2">
+                <button onClick={() => deletar(d.ID_dep)}>
+                  <img
+                    src="/assets/edit.png"
+                    alt="Editar"
+                    className="h-10 w-10 cursor-pointer transition hover:opacity-70"
+                  ></img>
+                </button>
+              </td>
+              <td className="px-4 py-2">
+                <button onClick={() => deletar(d.id)} title="Deletar">
+                  <img
+                    src="/assets/Trash 2.png"
+                    alt="Ícone de deletar"
+                    className="h-10 w-10 cursor-pointer transition hover:opacity-70"
+                  />
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
       <div>
         <h1>Departamentos</h1>
-        <ul>{data?.map((d) => <li key={d.ID_Dep}>{d.Nome}</li>)}</ul>
       </div>
     </div>
   );
