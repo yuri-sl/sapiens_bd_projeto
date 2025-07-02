@@ -1,0 +1,205 @@
+-- Departamento
+CREATE TABLE departamento (
+    id_dep INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nome VARCHAR(100)
+);
+select * from departamento;
+
+-- Usuário
+CREATE TABLE usuario (
+    matricula INT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(14) NOT NULL,
+    email VARCHAR(30) NOT NULL,
+    senha VARCHAR(20) NOT NULL,
+    fotousuario BYTEA,
+    UNIQUE (cpf, email)
+);
+SELECT * FROM usuario;
+
+-- Aluno
+CREATE TABLE aluno (
+    curso VARCHAR(100) NOT NULL,
+    ira FLOAT NOT NULL,
+    data_ingresso DATE NOT NULL,
+    idpesquisa INT,
+    idbolsa INT,
+    idusuario INT PRIMARY KEY
+);
+SELECT * FROM aluno;
+-- Professor
+CREATE TABLE professor (
+    titulo VARCHAR(100),
+    cargahoraria INT,
+    idusuario INT PRIMARY KEY
+);
+SELECT * FROM professor;
+-- Coordenador
+CREATE TABLE coordenador (
+    inicio_coordenador INT,
+    fimmandato DATE NOT NULL,
+    iddepartamento INT NOT NULL,
+    idusuario INT PRIMARY KEY
+);
+select * from coordenador;
+-- Área
+CREATE TABLE area (
+    idarea INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nomearea VARCHAR(100) NOT NULL
+);
+select * from area;
+-- Especialidade
+CREATE TABLE especialidade (
+    idespecialidade INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nomeespecialidade VARCHAR(200) NOT NULL
+);
+
+-- Pesquisa
+CREATE TABLE pesquisa (
+    idpesquisa INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    datainicio DATE NOT NULL,
+    datafim DATE NOT NULL,
+    titulopesquisa VARCHAR(300) NOT NULL,
+    relatorio BYTEA,
+    estadopesquisa VARCHAR(50),
+    vagasvoluntarias INT NOT NULL,
+    vagasremuneradas INT NOT NULL
+);
+select * from bolsa;
+-- Bolsa
+CREATE TABLE bolsa (
+    valor_bolsa FLOAT NOT NULL,
+    idbolsa INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY
+);
+select * from pesquisa;
+-- Revista
+CREATE TABLE revista (
+    isbn VARCHAR(20) PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    datapublicacao DATE NOT NULL
+);
+select * from revista;
+-- Many-to-Many Tables (with composite PKs)
+CREATE TABLE pertence (
+    id_dep INT,
+    matricula INT,
+    PRIMARY KEY (id_dep, matricula)
+);
+select * from pertence;
+CREATE TABLE tem (
+    idarea INT,
+    id_dep INT,
+    PRIMARY KEY (idarea, id_dep)
+);
+select * from tem;
+CREATE TABLE tem1 (
+    idarea INT,
+    idespecialidade INT,
+    PRIMARY KEY (idarea, idespecialidade)
+);
+select * from tem1;
+CREATE TABLE pertence1 (
+    idespecialidade INT,
+    idpesquisa INT,
+    PRIMARY KEY (idespecialidade, idpesquisa)
+);
+select * from pertence1;
+CREATE TABLE realiza (
+    idpesquisa INT,
+    idprofessor INT,
+    PRIMARY KEY (idpesquisa, idprofessor)
+);
+select * from realiza
+CREATE TABLE oferece (
+    id_dep INT,
+    idpesquisa INT,
+    PRIMARY KEY (id_dep, idpesquisa)
+);
+select * from oferece;
+CREATE TABLE disponibiliza (
+    id_dep INT,
+    idbolsa INT,
+    PRIMARY KEY (id_dep, idbolsa)
+);
+select * from disponibiliza;
+CREATE TABLE abrange (
+    isbn VARCHAR(20),
+    idarea INT,
+    PRIMARY KEY (isbn, idarea)
+);
+select * from abrange;
+CREATE TABLE publica (
+    isbn VARCHAR(20),
+    idpesquisa INT,
+    PRIMARY KEY (isbn, idpesquisa)
+);
+select * from publica;
+CREATE TABLE atuar (
+    idarea INT,
+    idprofessor INT,
+    PRIMARY KEY (idarea, idprofessor)
+);
+select * from atuar;
+CREATE TABLE solicita_pesquisa (
+    idprofessor INT,
+    id_dep INT,
+    PRIMARY KEY (idprofessor, id_dep)
+);
+select * from solicita_pesquisa;
+-- Foreign Keys
+ALTER TABLE aluno
+    ADD FOREIGN KEY (idpesquisa) REFERENCES pesquisa(idpesquisa),
+    ADD FOREIGN KEY (idbolsa) REFERENCES bolsa(idbolsa),
+    ADD FOREIGN KEY (idusuario) REFERENCES usuario(matricula);
+select * from aluno;
+ALTER TABLE professor
+    ADD FOREIGN KEY (idusuario) REFERENCES usuario(matricula);
+select * from professor;
+ALTER TABLE coordenador
+    ADD FOREIGN KEY (iddepartamento) REFERENCES departamento(id_dep),
+    ADD FOREIGN KEY (idusuario) REFERENCES usuario(matricula);
+select * from coordenador;
+ALTER TABLE pertence
+    ADD FOREIGN KEY (id_dep) REFERENCES departamento(id_dep),
+    ADD FOREIGN KEY (matricula) REFERENCES usuario(matricula);
+select * from pertence;
+ALTER TABLE tem
+    ADD FOREIGN KEY (idarea) REFERENCES area(idarea),
+    ADD FOREIGN KEY (id_dep) REFERENCES departamento(id_dep);
+select * from tem;
+ALTER TABLE tem1
+    ADD FOREIGN KEY (idarea) REFERENCES area(idarea),
+    ADD FOREIGN KEY (idespecialidade) REFERENCES especialidade(idespecialidade);
+select * from tem1;
+ALTER TABLE pertence1
+    ADD FOREIGN KEY (idespecialidade) REFERENCES especialidade(idespecialidade),
+    ADD FOREIGN KEY (idpesquisa) REFERENCES pesquisa(idpesquisa);
+select * from pertence1;
+ALTER TABLE realiza
+    ADD FOREIGN KEY (idpesquisa) REFERENCES pesquisa(idpesquisa),
+    ADD FOREIGN KEY (idprofessor) REFERENCES professor(idusuario);
+select * from realiza;
+ALTER TABLE oferece
+    ADD FOREIGN KEY (id_dep) REFERENCES departamento(id_dep),
+    ADD FOREIGN KEY (idpesquisa) REFERENCES pesquisa(idpesquisa);
+select * from oferece;
+ALTER TABLE disponibiliza
+    ADD FOREIGN KEY (id_dep) REFERENCES departamento(id_dep),
+    ADD FOREIGN KEY (idbolsa) REFERENCES bolsa(idbolsa);
+select * from disponibiliza;
+ALTER TABLE abrange
+    ADD FOREIGN KEY (isbn) REFERENCES revista(isbn),
+    ADD FOREIGN KEY (idarea) REFERENCES area(idarea);
+select * from abrange;
+ALTER TABLE publica
+    ADD FOREIGN KEY (isbn) REFERENCES revista(isbn),
+    ADD FOREIGN KEY (idpesquisa) REFERENCES pesquisa(idpesquisa);
+select * from publica;
+ALTER TABLE atuar
+    ADD FOREIGN KEY (idarea) REFERENCES area(idarea),
+    ADD FOREIGN KEY (idprofessor) REFERENCES professor(idusuario);
+select * from atuar;
+ALTER TABLE solicita_pesquisa
+    ADD FOREIGN KEY (idprofessor) REFERENCES professor(idusuario),
+    ADD FOREIGN KEY (id_dep) REFERENCES departamento(id_dep);
+select * from solicita_pesquisa;
