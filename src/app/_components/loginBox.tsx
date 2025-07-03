@@ -1,6 +1,6 @@
 import React from "react";
 import { api } from "~/trpc/react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 export default function LoginBox() {
