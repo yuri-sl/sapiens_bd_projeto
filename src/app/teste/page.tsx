@@ -7,6 +7,7 @@ import TabelaDepartamento from "~/app/_components/Coordenador/tabelaDepartamento
 import Navbar from "../_components/navbar";
 import LoginBox from "../_components/loginBox";
 import InformationsComponentCoord from "../_components/Coordenador/informationsComponent";
+import UsuarioPage from "../_components/Coordenador/tabelaUsuario";
 
 export default function Home() {
   return (
@@ -14,8 +15,9 @@ export default function Home() {
       <Navbar />
       <h1>Hello Sapiens</h1>
       <TabelaDepartamento></TabelaDepartamento>
+      <UsuarioPage />
       <LoginBox></LoginBox>
-      <InformationsComponentCoord/>
+      <InformationsComponentCoord />
     </div>
   );
 }

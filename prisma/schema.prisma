@@ -1,16 +1,169 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-model Departamento{
-    ID_Dep Int @id @default(autoincrement())
-    Nome String
+model aluno {
+  curso         String   @db.VarChar(100)
+  ira           Float
+  data_ingresso DateTime @db.Date
+  idpesquisa    Int?
+  idbolsa       Int?
+  idusuario     Int      @id
+}
+
+model abrange {
+  isbn   String @db.VarChar(20)
+  idarea Int
+
+  @@id([isbn, idarea])
+}
+
+model area {
+  idarea   Int    @id @default(autoincrement())
+  nomearea String @db.VarChar(100)
+  tem      tem[]
+  tem1     tem1[]
+}
+
+model atuar {
+  idarea      Int
+  idprofessor Int
+
+  @@id([idarea, idprofessor])
+}
+
+model bolsa {
+  valor_bolsa Float
+  idbolsa     Int   @id @default(autoincrement())
+}
+
+model coordenador {
+  inicio_coordenador Int?
+  fimmandato         DateTime @db.Date
+  iddepartamento     Int
+  idusuario          Int      @id
+}
+
+model disponibiliza {
+  id_dep  Int
+  idbolsa Int
+
+  @@id([id_dep, idbolsa])
+}
+
+model especialidade {
+  idespecialidade   Int         @id @default(autoincrement())
+  nomeespecialidade String      @db.VarChar(200)
+  pertence1         pertence1[]
+  tem1              tem1[]
+}
+
+model oferece {
+  id_dep     Int
+  idpesquisa Int
+
+  @@id([id_dep, idpesquisa])
+}
+
+model pertence {
+  id_dep    Int
+  matricula Int
+
+  @@id([id_dep, matricula])
+}
+
+model pertence1 {
+  idespecialidade Int
+  idpesquisa      Int
+  especialidade   especialidade @relation(fields: [idespecialidade], references: [idespecialidade], onDelete: NoAction, onUpdate: NoAction)
+  pesquisa        pesquisa      @relation(fields: [idpesquisa], references: [idpesquisa], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([idespecialidade, idpesquisa])
+}
+
+model pesquisa {
+  idpesquisa       Int         @id @default(autoincrement())
+  datainicio       DateTime    @db.Date
+  datafim          DateTime    @db.Date
+  titulopesquisa   String      @db.VarChar(300)
+  relatorio        Bytes?
+  estadopesquisa   String?     @db.VarChar(50)
+  vagasvoluntarias Int
+  vagasremuneradas Int
+  pertence1        pertence1[]
+  realiza          realiza[]
+}
+
+model professor {
+  titulo       String?   @db.VarChar(100)
+  cargahoraria Int?
+  idusuario    Int       @id
+  realiza      realiza[]
+}
+
+model publica {
+  isbn       String @db.VarChar(20)
+  idpesquisa Int
+
+  @@id([isbn, idpesquisa])
+}
+
+model realiza {
+  idpesquisa  Int
+  idprofessor Int
+  pesquisa    pesquisa  @relation(fields: [idpesquisa], references: [idpesquisa], onDelete: NoAction, onUpdate: NoAction)
+  professor   professor @relation(fields: [idprofessor], references: [idusuario], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([idpesquisa, idprofessor])
+}
+
+model revista {
+  isbn           String   @id @db.VarChar(20)
+  titulo         String   @db.VarChar(100)
+  datapublicacao DateTime @db.Date
+}
+
+model solicita_pesquisa {
+  idprofessor Int
+  id_dep      Int
+
+  @@id([idprofessor, id_dep])
+}
+
+model tem {
+  idarea Int
+  id_dep Int
+  area   area @relation(fields: [idarea], references: [idarea], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([idarea, id_dep])
+}
+
+model tem1 {
+  idarea          Int
+  idespecialidade Int
+  area            area          @relation(fields: [idarea], references: [idarea], onDelete: NoAction, onUpdate: NoAction)
+  especialidade   especialidade @relation(fields: [idespecialidade], references: [idespecialidade], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([idarea, idespecialidade])
+}
+
+model departamento {
+  id_dep Int     @id @default(autoincrement())
+  nome   String? @db.VarChar(100)
+}
+
+model usuario {
+  matricula   Int    @id
+  nome        String @db.VarChar(100)
+  cpf         String @db.VarChar(14)
+  email       String @db.VarChar(30)
+  senha       String @db.VarChar(20)
+  fotousuario Bytes?
+
+  @@unique([cpf, email])
 }
