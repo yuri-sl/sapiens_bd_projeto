@@ -14,10 +14,18 @@ export const usuarioRouter = createTRPCRouter({
         cpf: z.string(),
         email: z.string().email(),
         senha: z.string(),
+        matricula: z.number(),
         fotousuario: z.instanceof(Buffer).optional(),
       }),
     )
     .mutation(async ({ input }) => {
       return db.usuario.create({ data: input });
     }),
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    return ctx.db.usuario.findMany({
+      include: {
+        aluno: true,
+      },
+    });
+  }),
 });

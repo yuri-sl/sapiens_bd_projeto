@@ -1,7 +1,7 @@
 import { api } from "~/trpc/react";
 import { useState } from "react";
 
-export default function UsuarioPage() {
+export default function AlunoTabela() {
   const { data: usuarios, isLoading } = api.usuario.getAll.useQuery();
   const createUsuario = api.usuario.create.useMutation();
 
@@ -32,7 +32,7 @@ export default function UsuarioPage() {
         <thead className="mx-auto w-5 table-auto border-collapse bg-gray-200 shadow-md">
           <tr className="w-max bg-blue-500 px-8">
             <th className="px-4 py-4 text-left text-white" colSpan={2}>
-              Usuários cadastrados no departamento
+              Alunos cadastrados no departamento
             </th>
             <th colSpan={3}>
               <button className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700">
@@ -47,6 +47,9 @@ export default function UsuarioPage() {
             <th className="px-4 py-2">CPF</th>
             <th className="px-4 py-2">Email</th>
             <th className="px-4 py-2">Senha</th>
+            <th className="px-4 py-2">Curso</th>
+            <th className="px-4 py-2">IRA</th>
+            <th className="px-4 py-2">Data de ingresso</th>
             <th className="px-4 py-2" colSpan={2}>
               Ações
             </th>
@@ -63,6 +66,9 @@ export default function UsuarioPage() {
               <td className="px-4 py-2">{u.cpf}</td>
               <td className="px-4 py-2">{u.email}</td>
               <td className="px-4 py-2">{u.senha}</td>
+              <td className="px-4 py-2">Engenharia de Lagosta</td>
+              <td className="px-4 py-2">4.76</td>
+              <td className="px-4 py-2">10/09/2022</td>
               <td className="px-4 py-2">
                 <button onClick={() => editar(u.matricula)}>
                   <img
@@ -80,6 +86,13 @@ export default function UsuarioPage() {
                     className="h-10 w-10 cursor-pointer transition hover:opacity-70"
                   />
                 </button>
+              </td>
+              <td className="px-4 py-2">{u.aluno?.curso ?? "N/A"}</td>
+              <td className="px-4 py-2">{u.aluno?.ira ?? "N/A"}</td>
+              <td className="px-4 py-2">
+                {u.aluno?.data_ingresso
+                  ? new Date(u.aluno.data_ingresso).toLocaleDateString("pt-BR")
+                  : "N/A"}
               </td>
             </tr>
           ))}

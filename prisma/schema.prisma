@@ -7,25 +7,55 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model departamento {
+  id_dep            Int                 @id @default(autoincrement())
+  nome              String?             @db.VarChar(100)
+  coordenador       coordenador[]
+  disponibiliza     disponibiliza[]
+  oferece           oferece[]
+  solicita_pesquisa solicita_pesquisa[]
+}
+
+model usuario {
+  matricula   Int          @id
+  nome        String       @db.VarChar(100)
+  cpf         String       @db.VarChar(14)
+  email       String       @db.VarChar(30)
+  senha       String       @db.VarChar(20)
+  fotousuario Bytes?
+  aluno       aluno?
+  coordenador coordenador?
+  professor   professor?
+
+  @@unique([cpf, email])
+}
+
 model aluno {
-  curso         String   @db.VarChar(100)
+  curso         String    @db.VarChar(100)
   ira           Float
-  data_ingresso DateTime @db.Date
+  data_ingresso DateTime  @db.Date
   idpesquisa    Int?
   idbolsa       Int?
-  idusuario     Int      @id
+  idusuario     Int       @id
+  bolsa         bolsa?    @relation(fields: [idbolsa], references: [idbolsa], onDelete: NoAction, onUpdate: NoAction)
+  pesquisa      pesquisa? @relation(fields: [idpesquisa], references: [idpesquisa], onDelete: NoAction, onUpdate: NoAction)
+  usuario       usuario   @relation(fields: [idusuario], references: [matricula], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model abrange {
-  isbn   String @db.VarChar(20)
-  idarea Int
+  isbn    String  @db.VarChar(20)
+  idarea  Int
+  area    area    @relation(fields: [idarea], references: [idarea], onDelete: NoAction, onUpdate: NoAction)
+  revista revista @relation(fields: [isbn], references: [isbn], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([isbn, idarea])
 }
 
 model area {
-  idarea   Int    @id @default(autoincrement())
-  nomearea String @db.VarChar(100)
+  idarea   Int       @id @default(autoincrement())
+  nomearea String    @db.VarChar(100)
+  abrange  abrange[]
+  atuar    atuar[]
   tem      tem[]
   tem1     tem1[]
 }
@@ -33,25 +63,33 @@ model area {
 model atuar {
   idarea      Int
   idprofessor Int
+  area        area      @relation(fields: [idarea], references: [idarea], onDelete: NoAction, onUpdate: NoAction)
+  professor   professor @relation(fields: [idprofessor], references: [idusuario], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([idarea, idprofessor])
 }
 
 model bolsa {
-  valor_bolsa Float
-  idbolsa     Int   @id @default(autoincrement())
+  valor_bolsa   Float
+  idbolsa       Int             @id @default(autoincrement())
+  aluno         aluno[]
+  disponibiliza disponibiliza[]
 }
 
 model coordenador {
   inicio_coordenador Int?
-  fimmandato         DateTime @db.Date
+  fimmandato         DateTime     @db.Date
   iddepartamento     Int
-  idusuario          Int      @id
+  idusuario          Int          @id
+  departamento       departamento @relation(fields: [iddepartamento], references: [id_dep], onDelete: NoAction, onUpdate: NoAction)
+  usuario            usuario      @relation(fields: [idusuario], references: [matricula], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model disponibiliza {
-  id_dep  Int
-  idbolsa Int
+  id_dep       Int
+  idbolsa      Int
+  departamento departamento @relation(fields: [id_dep], references: [id_dep], onDelete: NoAction, onUpdate: NoAction)
+  bolsa        bolsa        @relation(fields: [idbolsa], references: [idbolsa], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([id_dep, idbolsa])
 }
@@ -64,8 +102,10 @@ model especialidade {
 }
 
 model oferece {
-  id_dep     Int
-  idpesquisa Int
+  id_dep       Int
+  idpesquisa   Int
+  departamento departamento @relation(fields: [id_dep], references: [id_dep], onDelete: NoAction, onUpdate: NoAction)
+  pesquisa     pesquisa     @relation(fields: [idpesquisa], references: [idpesquisa], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([id_dep, idpesquisa])
 }
@@ -95,20 +135,28 @@ model pesquisa {
   estadopesquisa   String?     @db.VarChar(50)
   vagasvoluntarias Int
   vagasremuneradas Int
+  aluno            aluno[]
+  oferece          oferece[]
   pertence1        pertence1[]
+  publica          publica[]
   realiza          realiza[]
 }
 
 model professor {
-  titulo       String?   @db.VarChar(100)
-  cargahoraria Int?
-  idusuario    Int       @id
-  realiza      realiza[]
+  titulo            String?             @db.VarChar(100)
+  cargahoraria      Int?
+  idusuario         Int                 @id
+  atuar             atuar[]
+  usuario           usuario             @relation(fields: [idusuario], references: [matricula], onDelete: NoAction, onUpdate: NoAction)
+  realiza           realiza[]
+  solicita_pesquisa solicita_pesquisa[]
 }
 
 model publica {
-  isbn       String @db.VarChar(20)
+  isbn       String   @db.VarChar(20)
   idpesquisa Int
+  pesquisa   pesquisa @relation(fields: [idpesquisa], references: [idpesquisa], onDelete: NoAction, onUpdate: NoAction)
+  revista    revista  @relation(fields: [isbn], references: [isbn], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([isbn, idpesquisa])
 }
@@ -123,14 +171,18 @@ model realiza {
 }
 
 model revista {
-  isbn           String   @id @db.VarChar(20)
-  titulo         String   @db.VarChar(100)
-  datapublicacao DateTime @db.Date
+  isbn           String    @id @db.VarChar(20)
+  titulo         String    @db.VarChar(100)
+  datapublicacao DateTime  @db.Date
+  abrange        abrange[]
+  publica        publica[]
 }
 
 model solicita_pesquisa {
-  idprofessor Int
-  id_dep      Int
+  idprofessor  Int
+  id_dep       Int
+  departamento departamento @relation(fields: [id_dep], references: [id_dep], onDelete: NoAction, onUpdate: NoAction)
+  professor    professor    @relation(fields: [idprofessor], references: [idusuario], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([idprofessor, id_dep])
 }
@@ -150,20 +202,4 @@ model tem1 {
   especialidade   especialidade @relation(fields: [idespecialidade], references: [idespecialidade], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([idarea, idespecialidade])
-}
-
-model departamento {
-  id_dep Int     @id @default(autoincrement())
-  nome   String? @db.VarChar(100)
-}
-
-model usuario {
-  matricula   Int    @id
-  nome        String @db.VarChar(100)
-  cpf         String @db.VarChar(14)
-  email       String @db.VarChar(30)
-  senha       String @db.VarChar(20)
-  fotousuario Bytes?
-
-  @@unique([cpf, email])
 }
