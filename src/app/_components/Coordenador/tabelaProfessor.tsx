@@ -2,14 +2,14 @@ import { api } from "~/trpc/react";
 import { useState } from "react";
 
 export default function ProfessorTabela() {
-  const { data: usuarios, isLoading } = api.usuario.getAll.useQuery();
   const createUsuario = api.usuario.create.useMutation();
+  const { data: professores, isLoading } = api.usuario.listarProfessoresView.useQuery();
 
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [matricula, setmatricula] = useState("");
+  const [matricula, setMatricula] = useState("");
 
   const handleSubmit = () => {
     createUsuario.mutate({
@@ -23,38 +23,39 @@ export default function ProfessorTabela() {
     setCpf("");
     setEmail("");
     setSenha("");
-    setmatricula("");
+    setMatricula("");
   };
 
   return (
     <div className="max-h-[500px] overflow-y-auto">
-      <h1 className="text-cyan-600 font-bold text-4xl">Professores do departaento</h1>
+      <h1 className="text-cyan-600 font-bold text-4xl">Professores do departamento</h1>
       <table className="w-full border-4 border-solid border-black">
-        <thead className="mx-auto w-5 table-auto border-collapse bg-gray-200 shadow-md">
-          <tr className="w-max bg-blue-500 px-8">
-            <th className="px-4 py-4 text-left text-white" colSpan={2}>
+        <thead className="bg-blue-500 text-white">
+          <tr>
+            <th className="px-4 py-4 text-left" colSpan={7}>
               Professores cadastrados no departamento
             </th>
-            <th colSpan={3}>
+            <th colSpan={2}>
               <button className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700">
                 Adicionar novo professor
               </button>
             </th>
           </tr>
-          <tr>
-            <th className="px-4 py-2">Item</th>
+          <tr className="bg-gray-200 text-black">
+            <th className="px-4 py-2">Check</th>
             <th className="px-4 py-2">Matrícula</th>
             <th className="px-4 py-2">Nome</th>
             <th className="px-4 py-2">CPF</th>
             <th className="px-4 py-2">Email</th>
             <th className="px-4 py-2">Senha</th>
+            <th className="px-4 py-2">Tipo</th>
             <th className="px-4 py-2" colSpan={2}>
               Ações
             </th>
           </tr>
         </thead>
         <tbody>
-          {usuarios?.filter( u => u.aluno === null).map((u) => (
+          {professores?.map((u) => (
             <tr key={u.matricula}>
               <td className="px-4 py-2">
                 <input type="checkbox" className="h-6 w-8 accent-blue-600" />
@@ -64,6 +65,7 @@ export default function ProfessorTabela() {
               <td className="px-4 py-2">{u.cpf}</td>
               <td className="px-4 py-2">{u.email}</td>
               <td className="px-4 py-2">{u.senha}</td>
+              <td className="px-4 py-2">PROFESSOR</td>
               <td className="px-4 py-2">
                 <button onClick={() => editar(u.matricula)}>
                   <img
@@ -74,7 +76,7 @@ export default function ProfessorTabela() {
                 </button>
               </td>
               <td className="px-4 py-2">
-                <button onClick={() => deletar(d.ID_Dep)} title="Deletar">
+                <button onClick={() => deletar(u.matricula)} title="Deletar">
                   <img
                     src="/assets/Trash 2.png"
                     alt="Ícone de deletar"
@@ -86,12 +88,13 @@ export default function ProfessorTabela() {
           ))}
         </tbody>
       </table>
-      <h1>Usuários</h1>
+
+      <h2 className="mt-6 font-bold text-xl">Lista (raw):</h2>
       {isLoading ? (
-        <p>Loading...</p>
+        <p>Carregando...</p>
       ) : (
         <ul>
-          {usuarios?.map((u) => (
+          {professores?.map((u) => (
             <li key={u.matricula}>
               {u.nome} - {u.email}
             </li>
@@ -99,7 +102,7 @@ export default function ProfessorTabela() {
         </ul>
       )}
 
-      <div style={{ marginTop: "20px" }}>
+      <div className="mt-6 flex flex-col gap-2">
         <input
           placeholder="Nome"
           value={nome}
@@ -121,11 +124,16 @@ export default function ProfessorTabela() {
           onChange={(e) => setSenha(e.target.value)}
         />
         <input
-          placeholder="Matricula"
+          placeholder="Matrícula"
           value={matricula}
-          onChange={(e) => setmatricula(e.target.value)}
+          onChange={(e) => setMatricula(e.target.value)}
         />
-        <button onClick={handleSubmit}>Criar Usuário</button>
+        <button
+          onClick={handleSubmit}
+          className="w-fit rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+        >
+          Criar Usuário
+        </button>
       </div>
     </div>
   );
