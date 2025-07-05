@@ -1,7 +1,8 @@
 import React from "react";
 import { api } from "~/trpc/react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { createTRPCRouter } from "~/server/api/trpc";
 
 export default function LoginBox() {
   const router = useRouter();
@@ -14,7 +15,7 @@ export default function LoginBox() {
       const res = await loginMutation.mutateAsync({ email, senha });
 
       if (res.tipo === "aluno") router.push("/Estudante");
-      else if (res.tipo === "coordeandor") router.push("/Coordenador");
+      else if (res.tipo === "coordenador") router.push("/Coordenador");
       else if (res.tipo === "professor") router.push("/Professor");
       else alert("Usuário sem tipo deifnido");
     } catch (err) {

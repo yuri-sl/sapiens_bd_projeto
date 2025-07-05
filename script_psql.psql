@@ -5,6 +5,18 @@ CREATE TABLE departamento (
 );
 select * from departamento;
 
+INSERT INTO departamento (nome) VALUES ('Departamento de Engenharia Elétrica');
+INSERT INTO departamento (nome) VALUES ('Departamento de Engenharia de Computação');
+INSERT INTO departamento (nome) VALUES ('Departamento de Cieência da Computação');
+INSERT INTO departamento (nome) VALUES ('Departamento de Engenharia de Redes');
+INSERT INTO departamento (nome) VALUES ('Departamento de Engenharia Mecatrônica');
+INSERT INTO departamento (nome) VALUES ('Departamento de Engenharia Elétrica');
+
+DELETE FROM departamento where id_dep = 1;
+
+
+
+
 -- Usuário
 CREATE TABLE usuario (
     matricula INT PRIMARY KEY,
@@ -27,7 +39,8 @@ CREATE TABLE aluno (
     idusuario INT PRIMARY KEY
 );
 SELECT * FROM aluno;
--- Professor
+
+
 CREATE TABLE professor (
     titulo VARCHAR(100),
     cargahoraria INT,
@@ -53,7 +66,7 @@ CREATE TABLE especialidade (
     idespecialidade INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nomeespecialidade VARCHAR(200) NOT NULL
 );
-
+SELECT * FROM especialidade;
 -- Pesquisa
 CREATE TABLE pesquisa (
     idpesquisa INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -65,6 +78,7 @@ CREATE TABLE pesquisa (
     vagasvoluntarias INT NOT NULL,
     vagasremuneradas INT NOT NULL
 );
+select * from pesquisa;
 select * from bolsa;
 -- Bolsa
 CREATE TABLE bolsa (
@@ -151,7 +165,14 @@ ALTER TABLE aluno
     ADD FOREIGN KEY (idpesquisa) REFERENCES pesquisa(idpesquisa),
     ADD FOREIGN KEY (idbolsa) REFERENCES bolsa(idbolsa),
     ADD FOREIGN KEY (idusuario) REFERENCES usuario(matricula);
-select * from aluno;
+select * from usuario;
+
+INSERT INTO aluno (curso, ira, idpesquisa, idbolsa, idusuario, data_ingresso)
+VALUES ('Engenharia de Computação', 4.23, NULL, NULL, 100, '2022-08-01'); 
+SELECT * FROM aluno;
+SELECT * FROM usuario;
+INSERT INTO aluno (curso,ira,idpesquisa,idbolsa,idusuario) VALUES('Engenharia de Computação',4.23,NULL,NULL,100);
+
 ALTER TABLE professor
     ADD FOREIGN KEY (idusuario) REFERENCES usuario(matricula);
 select * from professor;
@@ -159,8 +180,9 @@ ALTER TABLE coordenador
     ADD FOREIGN KEY (iddepartamento) REFERENCES departamento(id_dep),
     ADD FOREIGN KEY (idusuario) REFERENCES usuario(matricula);
 select * from coordenador;
+-- FALTA ACIMA--
 ALTER TABLE pertence
-    ADD FOREIGN KEY (id_dep) REFERENCES departamento(id_dep),
+    ADD FOREIGN KEY (id_dep) REFERENCES departamento(id_dep)),
     ADD FOREIGN KEY (matricula) REFERENCES usuario(matricula);
 select * from pertence;
 ALTER TABLE tem
@@ -179,6 +201,7 @@ ALTER TABLE realiza
     ADD FOREIGN KEY (idpesquisa) REFERENCES pesquisa(idpesquisa),
     ADD FOREIGN KEY (idprofessor) REFERENCES professor(idusuario);
 select * from realiza;
+-----------------------------
 ALTER TABLE oferece
     ADD FOREIGN KEY (id_dep) REFERENCES departamento(id_dep),
     ADD FOREIGN KEY (idpesquisa) REFERENCES pesquisa(idpesquisa);
@@ -203,3 +226,42 @@ ALTER TABLE solicita_pesquisa
     ADD FOREIGN KEY (idprofessor) REFERENCES professor(idusuario),
     ADD FOREIGN KEY (id_dep) REFERENCES departamento(id_dep);
 select * from solicita_pesquisa;
+
+
+----- CRIAÇÃO DE VIEW ----
+CREATE VIEW alunos_com_bolsa AS
+SELECT u.nome, u.email, a.curso, b.valor_bolsa
+FROM aluno a
+JOIN usuario u ON u.matricula = a.idusuario
+JOIN bolsa b ON b.idbolsa = a.idbolsa;
+
+--- CRIAÇÃO DE PROCEDURE ----
+CREATE OR REPLACE FUNCTION cadastrar_aluno(
+    p_matricula INT,
+    p_nome VARCHAR,
+    p_cpf VARCHAR,
+    p_email VARCHAR,
+    p_senha VARCHAR,
+    p_curso VARCHAR,
+    p_ira NUMERIC,
+    p_data_ingresso DATE,
+    p_idpesquisa INT DEFAULT NULL,
+    p_idbolsa INT DEFAULT NULL
+) RETURNS VOID AS $$
+BEGIN
+    INSERT INTO usuario (matricula, nome, cpf, email, senha)
+    VALUES (p_matricula, p_nome, p_cpf, p_email, p_senha);
+
+    INSERT INTO aluno (idusuario, curso, ira, data_ingresso, idpesquisa, idbolsa)
+    VALUES (p_matricula, p_curso, p_ira, p_data_ingresso, p_idpesquisa, p_idbolsa);
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT cadastrar_aluno(
+    200, 'Maria Silva', '12345678900', 'maria@email.com', 'senha123',
+    'Engenharia da Computação', 8.75, '2022-03-01'
+);
+
+SELECT * FROM usuario,aluno WHERE aluno.idusuario = usuario.matricula;
+select * from departamento;
+select * from usuario as usu,aluno as al WHERE usu.matricula = al.idusuario;
