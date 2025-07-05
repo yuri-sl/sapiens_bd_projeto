@@ -38,30 +38,30 @@ export default function AddNewAluno({ onClose }: { onClose: () => void }) {
         <div className="flex justify-between gap-6">
           <div className="flex flex-col gap-2 w-1/2">
             <label>Nome do aluno</label>
-            <input value={nome} onChange={(e) => setNome(e.target.value)} className="bg-gray-100 p-2 rounded" />
+            <input required value={nome} onChange={(e) => setNome(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
             <label>CPF</label>
-            <input value={cpf} onChange={(e) => setCpf(e.target.value)} className="bg-gray-100 p-2 rounded" />
+            <input required value={cpf} onChange={(e) => setCpf(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
             <label>Matrícula</label>
-            <input value={matricula} onChange={(e) => setMatricula(e.target.value)} className="bg-gray-100 p-2 rounded" />
+            <input required value={matricula} onChange={(e) => setMatricula(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
             <label>Curso</label>
-            <input value={curso} onChange={(e) => setCurso(e.target.value)} className="bg-gray-100 p-2 rounded" />
+            <input required value={curso} onChange={(e) => setCurso(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
             <label>IRA</label>
-            <input type="number" value={ira} onChange={(e) => setIra(e.target.value)} className="bg-gray-100 p-2 rounded" />
+            <input required type="number" value={ira} onChange={(e) => setIra(e.target.value)} className="bg-gray-100 p-2 rounded" min="0" max="5" step="1" />
 
             <label>Data de Ingresso</label>
-            <input type="date" value={dataIngresso} onChange={(e) => setDataIngresso(e.target.value)} className="bg-gray-100 p-2 rounded" />
+            <input required type="date" value={dataIngresso} onChange={(e) => setDataIngresso(e.target.value)} className="bg-gray-100 p-2 rounded" />
           </div>
 
           <div className="flex flex-col gap-2 w-1/2">
             <label>Email</label>
-            <input value={email} onChange={(e) => setEmail(e.target.value)} className="bg-gray-100 p-2 rounded" />
+            <input required value={email} onChange={(e) => setEmail(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
             <label>Senha</label>
-            <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} className="bg-gray-100 p-2 rounded" />
+            <input  required type="password" value={senha} onChange={(e) => setSenha(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
             <label>Foto (opcional)</label>
             <button className="bg-gray-500 rounded-lg p-2 w-fit">Selecionar imagem</button>

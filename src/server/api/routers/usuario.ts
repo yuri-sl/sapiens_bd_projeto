@@ -100,6 +100,31 @@ export const usuarioRouter = createTRPCRouter({
       )
     `;
   }),
+  deletarAluno: publicProcedure
+  .input(z.object({ matricula: z.number() }))
+  .mutation(async ({ ctx, input }) => {
+    await ctx.db.aluno.deleteMany({
+      where: { idusuario: input.matricula },
+    });
+
+    await ctx.db.usuario.delete({
+      where: { matricula: input.matricula },
+    });
+  }),
+  deletarProfessor: publicProcedure
+  .input(z.object({ matricula: z.number() }))
+  .mutation(async ({ ctx, input }) => {
+    await ctx.db.professor.delete({
+      where: { idusuario: input.matricula },
+    });
+
+    await ctx.db.usuario.delete({
+      where: { matricula: input.matricula },
+    });
+  }),
+
+
+
 
 
 });

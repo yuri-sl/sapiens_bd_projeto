@@ -1,36 +1,42 @@
 import { api } from "~/trpc/react";
 import { useState } from "react";
 import AddNewAluno from "./addAluno";
-import RemoveAluno from "./deleteAluno";
 import EditAluno from "./editAluno";
+import RemoveAluno from "./deleteAluno";
 
 export default function UsuarioPage() {
-  const { data: alunos, isLoading } = api.usuario.listarAlunosView.useQuery();
-  const createUsuario = api.usuario.create.useMutation();
-
-  const [nome, setNome] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [matricula, setMatricula] = useState("");
+  const { data: alunos, isLoading, refetch } = api.usuario.listarAlunosView.useQuery();
+  const deletarAluno = api.usuario.deletarAluno.useMutation();
   const [showModal, setShowModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
-  const [showEditModal,setShowEditModal] = useState(false);
-
-  const handleSubmit = () => {
-    createUsuario.mutate({
-      nome,
-      cpf,
-      email,
-      senha,
-      matricula: parseInt(matricula),
-    });
-    setNome("");
-    setCpf("");
-    setEmail("");
-    setSenha("");
-    setMatricula("");
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [alunoSelecionado, setAlunoSelecionado] = useState<any>(null);
+  const [deletandoId, setDeletandoId] = useState<number | null>(null);
+  const handleDeletar = (matricula: number) => {
+    if (deletandoId === matricula) return; // já em andamento
+  
+    setDeletandoId(matricula);
+  
+    deletarAluno.mutate(
+      { matricula },
+      {
+        onSuccess: () => {
+          setDeletandoId(null);
+          // talvez: refetch(), toast, etc.
+        },
+        onError: () => {
+          setDeletandoId(null);
+        },
+      }
+    );
   };
+  
+
+  const handleDelete = () => {
+    setShowRemoveModal(false);
+    refetch();
+  };
+  
 
   return (
     <div className="max-h-[500px] overflow-y-auto">
@@ -43,8 +49,10 @@ export default function UsuarioPage() {
               Alunos cadastrados no departamento
             </th>
             <th colSpan={2}>
-              <button className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700"
-              onClick={() => setShowModal(true)}>
+              <button
+                className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700"
+                onClick={() => setShowModal(true)}
+              >
                 Adicionar novo aluno
               </button>
             </th>
@@ -56,9 +64,7 @@ export default function UsuarioPage() {
             <th className="px-4 py-2">CPF</th>
             <th className="px-4 py-2">Email</th>
             <th className="px-4 py-2">Senha</th>
-            <th className="px-4 py-2" colSpan={2}>
-              Ações
-            </th>
+            <th className="px-4 py-2" colSpan={2}>Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -73,7 +79,13 @@ export default function UsuarioPage() {
               <td className="px-4 py-2">{u.email}</td>
               <td className="px-4 py-2">{u.senha}</td>
               <td className="px-4 py-2">
-                <button onClick={() => setShowEditModal(true)} title="Editar">
+                <button
+                  onClick={() => {
+                    setAlunoSelecionado(u);
+                    setShowEditModal(true);
+                  }}
+                  title="Editar"
+                >
                   <img
                     src="/assets/edit.png"
                     alt="Editar"
@@ -82,7 +94,13 @@ export default function UsuarioPage() {
                 </button>
               </td>
               <td className="px-4 py-2">
-                <button onClick= {() =>setShowRemoveModal(true)} title="Deletar">
+                <button
+                  onClick={() => {
+                    setAlunoSelecionado(u);
+                    setShowRemoveModal(true);
+                  }}
+                  title="Deletar"
+                >
                   <img
                     src="/assets/Trash 2.png"
                     alt="Ícone de deletar"
@@ -94,9 +112,27 @@ export default function UsuarioPage() {
           ))}
         </tbody>
       </table>
-      {showModal && <AddNewAluno onClose={() => setShowModal(false)} />}
-      {showRemoveModal && <RemoveAluno onClose={() => setShowRemoveModal(false)} />}
-      {showEditModal && <EditAluno onClose={() => setShowEditModal(false)} />}
+
+      {showModal && <AddNewAluno onClose={() => { setShowModal(false);}} />}
+
+      {showRemoveModal && alunoSelecionado && (
+        <RemoveAluno
+          nomeAluno={alunoSelecionado.nome}
+          matricula={alunoSelecionado.matricula}
+          onClose={() => setShowRemoveModal(false)}
+          onConfirm={handleDelete}
+        />
+      )}
+
+      {showEditModal && alunoSelecionado && (
+        <EditAluno
+          aluno={alunoSelecionado}
+          onClose={() => {
+            setShowEditModal(false);
+            refetch();
+          }}
+        />
+      )}
     </div>
   );
 }

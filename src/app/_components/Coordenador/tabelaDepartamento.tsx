@@ -11,7 +11,6 @@ export default function TabelaDepartamento() {
 
   return (
 <div className="tabela-container">
-  <h2>Tabela componente</h2>
 
   {/* Container da tabela com rolagem vertical */}
   <div className="overflow-y-auto max-h-[500px]">

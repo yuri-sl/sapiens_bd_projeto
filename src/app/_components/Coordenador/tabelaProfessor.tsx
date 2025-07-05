@@ -1,6 +1,7 @@
 import { api } from "~/trpc/react";
 import { useState } from "react";
 import AddNewProfessor from "./addProfessor";
+import RemoveProfessor from "./deleteProfessor";
 
 export default function ProfessorTabela() {
   const createUsuario = api.usuario.create.useMutation();
@@ -12,6 +13,16 @@ export default function ProfessorTabela() {
   const [senha, setSenha] = useState("");
   const [matricula, setMatricula] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [professorSelecionado, setProfessorSelecionado] = useState<any>(null);
+
+  const handleDelete = async () => {
+    if (!professorSelecionado) return;
+    await deletarProfessor.mutateAsync({ matricula: professorSelecionado.matricula });
+    setShowRemoveModal(false);
+    refetch();
+  };
+
 
 
   const handleSubmit = () => {
@@ -85,7 +96,13 @@ export default function ProfessorTabela() {
                 </button>
               </td>
               <td className="px-4 py-2">
-                <button onClick={() => deletar(u.matricula)} title="Deletar">
+              <button
+                  onClick={() => {
+                    setProfessorSelecionado(u);
+                    setShowRemoveModal(true);
+                  }}
+                  title="Deletar"
+                >
                   <img
                     src="/assets/Trash 2.png"
                     alt="Ícone de deletar"
@@ -98,6 +115,14 @@ export default function ProfessorTabela() {
         </tbody>
       </table>
     {showModal && <AddNewProfessor onClose={() => setShowModal(false)} />}
+    {showRemoveModal && professorSelecionado && (
+  <RemoveProfessor
+    nomeProfessor={professorSelecionado.nome}
+    matricula={professorSelecionado.matricula}
+    onClose={() => setShowRemoveModal(false)}
+    onConfirm={handleDelete}
+  />
+)}
     </div>
   );
 }
