@@ -9,7 +9,7 @@ import LoginBox from "../_components/loginBox";
 import InformationsComponentCoord from "../_components/Coordenador/informationsComponent";
 import UsuarioPage from "../_components/Coordenador/tabelaUsuario";
 import AlunoTabela from "../_components/Coordenador/tabelaAluno";
-import areaPesquisa from "../_components/Coordenador/areaPesquisa";
+import AreaPesquisa from "../_components/Coordenador/areaPesquisa";
 import ProfessorTabela from "../_components/Coordenador/tabelaProfessor";
 
 export default function Home() {
@@ -21,7 +21,7 @@ export default function Home() {
       <UsuarioPage />
       <AlunoTabela />
       <ProfessorTabela/>
-      <areaPesquisa/>
+      <AreaPesquisa/>
       <LoginBox></LoginBox>
       <InformationsComponentCoord />
     </div>

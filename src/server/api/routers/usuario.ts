@@ -77,5 +77,29 @@ export const usuarioRouter = createTRPCRouter({
     input.idpesquisa ?? null,
     input.idbolsa ?? null);
   }),
+  cadastrarProfessorProcedure: publicProcedure
+  .input(z.object({
+    matricula: z.number(),
+    nome: z.string(),
+    cpf: z.string(),
+    email: z.string().email(),
+    senha: z.string(),
+    titulo: z.string(),
+    cargaHoraria: z.number(),
+  }))
+  .mutation(async ({ input, ctx }) => {
+    await ctx.db.$executeRaw`
+      SELECT cadastrar_professor(
+        ${input.matricula},
+        ${input.nome},
+        ${input.cpf},
+        ${input.email},
+        ${input.senha},
+        ${input.titulo},
+        ${input.cargaHoraria}
+      )
+    `;
+  }),
+
 
 });

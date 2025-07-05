@@ -1,7 +1,7 @@
 import { api } from "~/trpc/react";
 import { useState } from "react";
 
-export default function areaPesquisa() {
+export default function AreaPesquisa() {
   const { data: usuarios, isLoading } = api.usuario.getAll.useQuery();
   const createUsuario = api.usuario.create.useMutation();
 

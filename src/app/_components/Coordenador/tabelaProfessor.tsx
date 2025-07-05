@@ -1,5 +1,6 @@
 import { api } from "~/trpc/react";
 import { useState } from "react";
+import AddNewProfessor from "./addProfessor";
 
 export default function ProfessorTabela() {
   const createUsuario = api.usuario.create.useMutation();
@@ -10,6 +11,8 @@ export default function ProfessorTabela() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [matricula, setMatricula] = useState("");
+  const [showModal, setShowModal] = useState(false);
+
 
   const handleSubmit = () => {
     createUsuario.mutate({
@@ -36,7 +39,10 @@ export default function ProfessorTabela() {
               Professores cadastrados no departamento
             </th>
             <th colSpan={2}>
-              <button className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700">
+              <button
+              onClick={() => setShowModal(true)}
+              className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700"
+              >
                 Adicionar novo professor
               </button>
             </th>
@@ -48,7 +54,9 @@ export default function ProfessorTabela() {
             <th className="px-4 py-2">CPF</th>
             <th className="px-4 py-2">Email</th>
             <th className="px-4 py-2">Senha</th>
-            <th className="px-4 py-2">Tipo</th>
+            <th className="px-4 py-2">Título</th>
+            <th className="px-4 py-2">Área de Atuação</th>
+            <th className="px-4 py-2">Carga Horária</th>
             <th className="px-4 py-2" colSpan={2}>
               Ações
             </th>
@@ -65,7 +73,8 @@ export default function ProfessorTabela() {
               <td className="px-4 py-2">{u.cpf}</td>
               <td className="px-4 py-2">{u.email}</td>
               <td className="px-4 py-2">{u.senha}</td>
-              <td className="px-4 py-2">PROFESSOR</td>
+              <td className="px-4 py-2">{u.titulo}</td>
+              <td className="px-4 py-2">{u.cargaHoraria}</td>
               <td className="px-4 py-2">
                 <button onClick={() => editar(u.matricula)}>
                   <img
@@ -88,53 +97,7 @@ export default function ProfessorTabela() {
           ))}
         </tbody>
       </table>
-
-      <h2 className="mt-6 font-bold text-xl">Lista (raw):</h2>
-      {isLoading ? (
-        <p>Carregando...</p>
-      ) : (
-        <ul>
-          {professores?.map((u) => (
-            <li key={u.matricula}>
-              {u.nome} - {u.email}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <div className="mt-6 flex flex-col gap-2">
-        <input
-          placeholder="Nome"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-        />
-        <input
-          placeholder="CPF"
-          value={cpf}
-          onChange={(e) => setCpf(e.target.value)}
-        />
-        <input
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          placeholder="Senha"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-        />
-        <input
-          placeholder="Matrícula"
-          value={matricula}
-          onChange={(e) => setMatricula(e.target.value)}
-        />
-        <button
-          onClick={handleSubmit}
-          className="w-fit rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-        >
-          Criar Usuário
-        </button>
-      </div>
+    {showModal && <AddNewProfessor onClose={() => setShowModal(false)} />}
     </div>
   );
 }
