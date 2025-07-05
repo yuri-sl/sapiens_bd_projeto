@@ -17,10 +17,10 @@ export default function Home() {
     <div>
       <Navbar />
       <h1>Hello Sapiens</h1>
-      <TabelaDepartamento></TabelaDepartamento>
       <UsuarioPage />
       <AlunoTabela />
       <ProfessorTabela/>
+      <TabelaDepartamento />
       <AreaPesquisa/>
       <LoginBox></LoginBox>
       <InformationsComponentCoord />

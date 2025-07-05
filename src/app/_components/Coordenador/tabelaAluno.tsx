@@ -1,6 +1,8 @@
 import { api } from "~/trpc/react";
 import { useState } from "react";
 import AddNewAluno from "./addAluno";
+import RemoveAluno from "./deleteAluno";
+import EditAluno from "./editAluno";
 
 export default function UsuarioPage() {
   const { data: alunos, isLoading } = api.usuario.listarAlunosView.useQuery();
@@ -12,6 +14,8 @@ export default function UsuarioPage() {
   const [senha, setSenha] = useState("");
   const [matricula, setMatricula] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [showEditModal,setShowEditModal] = useState(false);
 
   const handleSubmit = () => {
     createUsuario.mutate({
@@ -69,7 +73,7 @@ export default function UsuarioPage() {
               <td className="px-4 py-2">{u.email}</td>
               <td className="px-4 py-2">{u.senha}</td>
               <td className="px-4 py-2">
-                <button onClick={() => editar(u.matricula)}>
+                <button onClick={() => setShowEditModal(true)} title="Editar">
                   <img
                     src="/assets/edit.png"
                     alt="Editar"
@@ -78,7 +82,7 @@ export default function UsuarioPage() {
                 </button>
               </td>
               <td className="px-4 py-2">
-                <button onClick={() => deletar(u.matricula)} title="Deletar">
+                <button onClick= {() =>setShowRemoveModal(true)} title="Deletar">
                   <img
                     src="/assets/Trash 2.png"
                     alt="Ícone de deletar"
@@ -91,6 +95,8 @@ export default function UsuarioPage() {
         </tbody>
       </table>
       {showModal && <AddNewAluno onClose={() => setShowModal(false)} />}
+      {showRemoveModal && <RemoveAluno onClose={() => setShowRemoveModal(false)} />}
+      {showEditModal && <EditAluno onClose={() => setShowEditModal(false)} />}
     </div>
   );
 }

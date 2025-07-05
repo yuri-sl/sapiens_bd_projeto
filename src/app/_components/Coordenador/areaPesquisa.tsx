@@ -37,7 +37,7 @@ export default function AreaPesquisa() {
             </th>
             <th colSpan={3}>
               <button className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700">
-                Adicionar novo usuário
+                Adicionar nova área
               </button>
             </th>
           </tr>
@@ -56,14 +56,9 @@ export default function AreaPesquisa() {
               <td className="px-4 py-2">
                 <input type="checkbox" className="h-6 w-8 accent-blue-600" />
               </td>
-              <td className="px-4 py-2">999{u.matricula}</td>
-              <td className="px-4 py-2">{u.nome}</td>
-              <td className="px-4 py-2">{u.cpf}</td>
-              <td className="px-4 py-2">
-                {u.aluno?.data_ingresso
-                  ? new Date(u.aluno.data_ingresso).toLocaleDateString("pt-BR")
-                  : "N/A"}
-              </td>
+              <td className="px-4 py-2">01</td>
+              <td className="px-4 py-2">INteligencia Artificial</td>
+              <td className="px-4 py-2">Processamento de Lingaugem Natural</td>
               <td className="px-4 py-2">
                 <button onClick={() => editar(u.matricula)}>
                   <img
@@ -86,47 +81,6 @@ export default function AreaPesquisa() {
           ))}
         </tbody>
       </table>
-      <h1>Usuários</h1>
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <ul>
-          {usuarios?.map((u) => (
-            <li key={u.matricula}>
-              {u.nome} - {u.email}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <div style={{ marginTop: "20px" }}>
-        <input
-          placeholder="Nome"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-        />
-        <input
-          placeholder="CPF"
-          value={cpf}
-          onChange={(e) => setCpf(e.target.value)}
-        />
-        <input
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          placeholder="Senha"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-        />
-        <input
-          placeholder="Matricula"
-          value={matricula}
-          onChange={(e) => setmatricula(e.target.value)}
-        />
-        <button onClick={handleSubmit}>Criar Usuário</button>
-      </div>
     </div>
   );
 }
