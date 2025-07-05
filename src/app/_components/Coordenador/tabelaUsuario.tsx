@@ -35,7 +35,7 @@ export default function UsuarioPage() {
             <th className="px-4 py-4 text-left text-white" colSpan={2}>
               Usuários cadastrados no departamento
             </th>
-            <th colSpan={3}>
+            <th colSpan={8}>
               <button className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700">
                 Adicionar novo usuário
               </button>
@@ -44,6 +44,7 @@ export default function UsuarioPage() {
           <tr>
             <th className="px-4 py-2">Item</th>
             <th className="px-4 py-2">Matrícula</th>
+            <th className="px-4 py-2">Foto de Perfil</th>
             <th className="px-4 py-2">Nome</th>
             <th className="px-4 py-2">CPF</th>
             <th className="px-4 py-2">Email</th>
@@ -59,7 +60,8 @@ export default function UsuarioPage() {
               <td className="px-4 py-2">
                 <input type="checkbox" className="h-6 w-8 accent-blue-600" />
               </td>
-              <td className="px-4 py-2">999{u.matricula}</td>
+              <td className="px-4 py-2">{u.matricula}</td>
+              <td className="px-4 py-2">N/A</td>
               <td className="px-4 py-2">{u.nome}</td>
               <td className="px-4 py-2">{u.cpf}</td>
               <td className="px-4 py-2">{u.email}</td>
@@ -86,47 +88,6 @@ export default function UsuarioPage() {
           ))}
         </tbody>
       </table>
-      <h1>Usuários</h1>
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <ul>
-          {usuarios?.map((u) => (
-            <li key={u.matricula}>
-              {u.nome} - {u.email}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <div style={{ marginTop: "20px" }}>
-        <input
-          placeholder="Nome"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-        />
-        <input
-          placeholder="CPF"
-          value={cpf}
-          onChange={(e) => setCpf(e.target.value)}
-        />
-        <input
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          placeholder="Senha"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-        />
-        <input
-          placeholder="Matricula"
-          value={matricula}
-          onChange={(e) => setmatricula(e.target.value)}
-        />
-        <button onClick={handleSubmit}>Criar Usuário</button>
-      </div>
     </div>
   );
 }

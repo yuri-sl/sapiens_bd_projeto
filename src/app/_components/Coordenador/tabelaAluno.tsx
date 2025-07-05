@@ -90,54 +90,7 @@ export default function UsuarioPage() {
           ))}
         </tbody>
       </table>
-
-      <h2 className="mt-6 font-bold text-xl">Lista (raw):</h2>
-      {isLoading ? (
-        <p>Carregando...</p>
-      ) : (
-        <ul>
-          {alunos?.map((u) => (
-            <li key={u.matricula}>
-              {u.nome} - {u.email}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <div className="mt-6 flex flex-col gap-2">
-        <input
-          placeholder="Nome"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-        />
-        <input
-          placeholder="CPF"
-          value={cpf}
-          onChange={(e) => setCpf(e.target.value)}
-        />
-        <input
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          placeholder="Senha"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-        />
-        <input
-          placeholder="Matrícula"
-          value={matricula}
-          onChange={(e) => setMatricula(e.target.value)}
-        />
-        <button
-          onClick={handleSubmit}
-          className="w-fit rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-        >
-          Criar Aluno
-        </button>
-      </div>
-        {showModal && <AddNewAluno onClose={() => setShowModal(false)} />}
+      {showModal && <AddNewAluno onClose={() => setShowModal(false)} />}
     </div>
   );
 }
