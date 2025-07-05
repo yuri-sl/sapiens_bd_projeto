@@ -28,6 +28,7 @@ export default function UsuarioPage() {
 
   return (
     <div className="max-h-[500px] overflow-y-auto">
+      <h1 className="text-cyan-600 font-bold text-4xl">Usuários do departaento</h1>
       <table className="w-full border-4 border-solid border-black">
         <thead className="mx-auto w-5 table-auto border-collapse bg-gray-200 shadow-md">
           <tr className="w-max bg-blue-500 px-8">

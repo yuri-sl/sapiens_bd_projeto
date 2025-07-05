@@ -28,13 +28,18 @@ export default function AlunoTabela() {
 
   return (
     <div className="max-h-[500px] overflow-y-auto">
+      <h1 className="text-cyan-600 font-bold text-4xl">Alunos do departaento</h1>
+      <div className="max-h-[500px] overflow-y-auto">
+        <div className="min-w-full inline-block align-middle">
+
+
       <table className="w-full border-4 border-solid border-black">
         <thead className="mx-auto w-5 table-auto border-collapse bg-gray-200 shadow-md">
           <tr className="w-max bg-blue-500 px-8">
-            <th className="px-4 py-4 text-left text-white" colSpan={2}>
+            <th className="px-8 py-4 text-left text-white" colSpan={6}>
               Alunos cadastrados no departamento
             </th>
-            <th colSpan={3}>
+            <th colSpan={5}>
               <button className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700">
                 Adicionar novo usuário
               </button>
@@ -56,7 +61,7 @@ export default function AlunoTabela() {
           </tr>
         </thead>
         <tbody>
-          {usuarios?.map((u) => (
+          {usuarios?.filter(u=>u.aluno).map((u) => (
             <tr key={u.matricula}>
               <td className="px-4 py-2">
                 <input type="checkbox" className="h-6 w-8 accent-blue-600" />
@@ -66,9 +71,13 @@ export default function AlunoTabela() {
               <td className="px-4 py-2">{u.cpf}</td>
               <td className="px-4 py-2">{u.email}</td>
               <td className="px-4 py-2">{u.senha}</td>
-              <td className="px-4 py-2">Engenharia de Lagosta</td>
-              <td className="px-4 py-2">4.76</td>
-              <td className="px-4 py-2">10/09/2022</td>
+              <td className="px-4 py-2">{u.aluno?.curso ?? "N/A"}</td>
+              <td className="px-4 py-2">{u.aluno?.ira ?? "N/A"}</td>
+              <td className="px-4 py-2">
+                {u.aluno?.data_ingresso
+                  ? new Date(u.aluno.data_ingresso).toLocaleDateString("pt-BR")
+                  : "N/A"}
+              </td>
               <td className="px-4 py-2">
                 <button onClick={() => editar(u.matricula)}>
                   <img
@@ -86,13 +95,6 @@ export default function AlunoTabela() {
                     className="h-10 w-10 cursor-pointer transition hover:opacity-70"
                   />
                 </button>
-              </td>
-              <td className="px-4 py-2">{u.aluno?.curso ?? "N/A"}</td>
-              <td className="px-4 py-2">{u.aluno?.ira ?? "N/A"}</td>
-              <td className="px-4 py-2">
-                {u.aluno?.data_ingresso
-                  ? new Date(u.aluno.data_ingresso).toLocaleDateString("pt-BR")
-                  : "N/A"}
               </td>
             </tr>
           ))}
@@ -138,6 +140,8 @@ export default function AlunoTabela() {
           onChange={(e) => setmatricula(e.target.value)}
         />
         <button onClick={handleSubmit}>Criar Usuário</button>
+      </div>
+      </div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { api } from "~/trpc/react";
 import { useState } from "react";
 
-export default function ProfessorTabela() {
+export default function areaPesquisa() {
   const { data: usuarios, isLoading } = api.usuario.getAll.useQuery();
   const createUsuario = api.usuario.create.useMutation();
 
@@ -28,42 +28,42 @@ export default function ProfessorTabela() {
 
   return (
     <div className="max-h-[500px] overflow-y-auto">
-      <h1 className="text-cyan-600 font-bold text-4xl">Professores do departaento</h1>
+      <h1 className="text-cyan-600 font-bold text-4xl">Áreas de pesquisas do departamento</h1>
       <table className="w-full border-4 border-solid border-black">
         <thead className="mx-auto w-5 table-auto border-collapse bg-gray-200 shadow-md">
           <tr className="w-max bg-blue-500 px-8">
             <th className="px-4 py-4 text-left text-white" colSpan={2}>
-              Professores cadastrados no departamento
+              Áreas de pesquisas do departamento
             </th>
             <th colSpan={3}>
               <button className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700">
-                Adicionar novo professor
+                Adicionar novo usuário
               </button>
             </th>
           </tr>
           <tr>
-            <th className="px-4 py-2">Item</th>
-            <th className="px-4 py-2">Matrícula</th>
-            <th className="px-4 py-2">Nome</th>
-            <th className="px-4 py-2">CPF</th>
-            <th className="px-4 py-2">Email</th>
-            <th className="px-4 py-2">Senha</th>
+            <th className="px-4 py-2">Id Area</th>
+            <th className="px-4 py-2">Área</th>
+            <th className="px-4 py-2">Especialização</th>
             <th className="px-4 py-2" colSpan={2}>
               Ações
             </th>
           </tr>
         </thead>
         <tbody>
-          {usuarios?.filter( u => u.aluno === null).map((u) => (
+          {usuarios?.map((u) => (
             <tr key={u.matricula}>
               <td className="px-4 py-2">
                 <input type="checkbox" className="h-6 w-8 accent-blue-600" />
               </td>
-              <td className="px-4 py-2">{u.matricula}</td>
+              <td className="px-4 py-2">999{u.matricula}</td>
               <td className="px-4 py-2">{u.nome}</td>
               <td className="px-4 py-2">{u.cpf}</td>
-              <td className="px-4 py-2">{u.email}</td>
-              <td className="px-4 py-2">{u.senha}</td>
+              <td className="px-4 py-2">
+                {u.aluno?.data_ingresso
+                  ? new Date(u.aluno.data_ingresso).toLocaleDateString("pt-BR")
+                  : "N/A"}
+              </td>
               <td className="px-4 py-2">
                 <button onClick={() => editar(u.matricula)}>
                   <img

@@ -15,6 +15,7 @@ export default function TabelaDepartamento() {
 
   {/* Container da tabela com rolagem vertical */}
   <div className="overflow-y-auto max-h-[500px]">
+  <h1 className="text-cyan-600 font-bold text-4xl">Projetos do departaento</h1>
     <table className="border-4 border-solid border-black w-full">
       <thead className="mx-auto w-5 table-auto border-collapse bg-gray-200 shadow-md">
         <tr className="bg-blue-500">
