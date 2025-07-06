@@ -5,6 +5,18 @@ CREATE TABLE departamento (
 );
 select * from departamento;
 
+INSERT INTO departamento (nome) VALUES ('Departamento de Engenharia Elétrica');
+INSERT INTO departamento (nome) VALUES ('Departamento de Engenharia de Computação');
+INSERT INTO departamento (nome) VALUES ('Departamento de Cieência da Computação');
+INSERT INTO departamento (nome) VALUES ('Departamento de Engenharia de Redes');
+INSERT INTO departamento (nome) VALUES ('Departamento de Engenharia Mecatrônica');
+INSERT INTO departamento (nome) VALUES ('Departamento de Engenharia Elétrica');
+
+DELETE FROM departamento where id_dep = 1;
+
+
+
+
 -- Usuário
 CREATE TABLE usuario (
     matricula INT PRIMARY KEY,
@@ -27,7 +39,8 @@ CREATE TABLE aluno (
     idusuario INT PRIMARY KEY
 );
 SELECT * FROM aluno;
--- Professor
+
+
 CREATE TABLE professor (
     titulo VARCHAR(100),
     cargahoraria INT,
@@ -53,7 +66,7 @@ CREATE TABLE especialidade (
     idespecialidade INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nomeespecialidade VARCHAR(200) NOT NULL
 );
-
+SELECT * FROM especialidade;
 -- Pesquisa
 CREATE TABLE pesquisa (
     idpesquisa INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -65,6 +78,7 @@ CREATE TABLE pesquisa (
     vagasvoluntarias INT NOT NULL,
     vagasremuneradas INT NOT NULL
 );
+select * from pesquisa;
 select * from bolsa;
 -- Bolsa
 CREATE TABLE bolsa (
@@ -151,7 +165,14 @@ ALTER TABLE aluno
     ADD FOREIGN KEY (idpesquisa) REFERENCES pesquisa(idpesquisa),
     ADD FOREIGN KEY (idbolsa) REFERENCES bolsa(idbolsa),
     ADD FOREIGN KEY (idusuario) REFERENCES usuario(matricula);
-select * from aluno;
+select * from usuario;
+
+INSERT INTO aluno (curso, ira, idpesquisa, idbolsa, idusuario, data_ingresso)
+VALUES ('Engenharia de Computação', 4.23, NULL, NULL, 100, '2022-08-01'); 
+SELECT * FROM aluno;
+SELECT * FROM usuario;
+INSERT INTO aluno (curso,ira,idpesquisa,idbolsa,idusuario) VALUES('Engenharia de Computação',4.23,NULL,NULL,100);
+
 ALTER TABLE professor
     ADD FOREIGN KEY (idusuario) REFERENCES usuario(matricula);
 select * from professor;
@@ -159,8 +180,9 @@ ALTER TABLE coordenador
     ADD FOREIGN KEY (iddepartamento) REFERENCES departamento(id_dep),
     ADD FOREIGN KEY (idusuario) REFERENCES usuario(matricula);
 select * from coordenador;
+-- FALTA ACIMA--
 ALTER TABLE pertence
-    ADD FOREIGN KEY (id_dep) REFERENCES departamento(id_dep),
+    ADD FOREIGN KEY (id_dep) REFERENCES departamento(id_dep)),
     ADD FOREIGN KEY (matricula) REFERENCES usuario(matricula);
 select * from pertence;
 ALTER TABLE tem
@@ -179,6 +201,7 @@ ALTER TABLE realiza
     ADD FOREIGN KEY (idpesquisa) REFERENCES pesquisa(idpesquisa),
     ADD FOREIGN KEY (idprofessor) REFERENCES professor(idusuario);
 select * from realiza;
+-----------------------------
 ALTER TABLE oferece
     ADD FOREIGN KEY (id_dep) REFERENCES departamento(id_dep),
     ADD FOREIGN KEY (idpesquisa) REFERENCES pesquisa(idpesquisa);
@@ -203,3 +226,326 @@ ALTER TABLE solicita_pesquisa
     ADD FOREIGN KEY (idprofessor) REFERENCES professor(idusuario),
     ADD FOREIGN KEY (id_dep) REFERENCES departamento(id_dep);
 select * from solicita_pesquisa;
+
+
+----- CRIAÇÃO DE VIEW ----
+CREATE VIEW alunos_com_bolsa AS
+SELECT u.nome, u.email, a.curso, b.valor_bolsa
+FROM aluno a
+JOIN usuario u ON u.matricula = a.idusuario
+JOIN bolsa b ON b.idbolsa = a.idbolsa;
+
+CREATE OR REPLACE VIEW vw_alunos AS 
+SELECT 
+  u.matricula,
+  u.nome,
+  u.cpf,
+  u.email,
+  u.senha,
+  u.fotousuario,
+  a.curso,
+  a.ira,
+  a.data_ingresso,
+  a.idpesquisa,
+  a.idbolsa
+FROM usuario u
+JOIN aluno a ON a.idusuario = u.matricula;
+
+
+select * from vw_alunos;
+
+select * from usuario;
+
+CREATE OR REPLACE VIEW vw_professores AS 
+SELECT 
+  u.matricula,
+  u.nome,
+  u.cpf,
+  u.email,
+  u.senha,
+  u.fotousuario,
+  p.titulo,
+  p.cargaHoraria
+FROM usuario u
+JOIN professor p ON p.idusuario = u.matricula;
+select * from vw_professores;
+
+--- CRIAÇÃO DE PROCEDURE ----
+CREATE OR REPLACE FUNCTION cadastrar_aluno(
+  p_matricula INT,
+  p_nome VARCHAR,
+  p_cpf VARCHAR,
+  p_email VARCHAR,
+  p_senha VARCHAR,
+  p_curso VARCHAR,
+  p_ira NUMERIC,
+  p_data_ingresso DATE,
+  p_idpesquisa INT,
+  p_idbolsa INT,
+  p_fotousuario BYTEA DEFAULT NULL
+)
+RETURNS VOID AS $$
+BEGIN
+  INSERT INTO usuario (matricula, nome, cpf, email, senha, fotousuario)
+  VALUES (p_matricula, p_nome, p_cpf, p_email, p_senha, p_fotousuario);
+
+  INSERT INTO aluno (
+    idusuario, curso, ira, data_ingresso, idpesquisa, idbolsa
+  ) VALUES (
+    p_matricula, p_curso, p_ira, p_data_ingresso, p_idpesquisa, p_idbolsa
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION cadastrar_professor(
+    p_matricula INT,
+    p_nome VARCHAR,
+    p_cpf VARCHAR,
+    p_email VARCHAR,
+    p_senha VARCHAR,
+    p_titulo VARCHAR,
+    p_cargaHoraria INT
+) RETURNS VOID AS $$
+BEGIN
+    INSERT INTO usuario (matricula, nome, cpf, email, senha)
+    VALUES (p_matricula, p_nome, p_cpf, p_email, p_senha);
+
+    INSERT INTO professor (idusuario, titulo, cargaHoraria)
+    VALUES (p_matricula, p_titulo, p_cargaHoraria);
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT cadastrar_professor(
+  301,
+  'Carlos Queiroz',
+  '32314421',
+  'Querioz@email.com',
+  'senhaSegura',
+  'Doutor',
+  60
+ );
+select * from professor;
+select * from vw_professores;
+
+select * from professor;
+
+SELECT cadastrar_aluno(
+    200, 'Maria Silva', '12345678900', 'maria@email.com', 'senha123',
+    'Engenharia da Computação', 8.75, '2022-03-01'
+);
+SELECT cadastrar_aluno(
+    201, 'Marcelo Kadabra', '12348678900', 'kadabra@email.com', 'senha123',
+    'Engenharia da Computação', 4.75, '2021-03-01'
+);
+INSERT INTO usuario (matricula, nome, cpf, email, senha) VALUES (202, 'Jefferson Alakazan', '12319087912312', 'alakazan@gmail.com', 'senhaSecreta');
+SELECT * FROM usuario,aluno WHERE aluno.idusuario = usuario.matricula;
+select * from departamento;
+select * from usuario as usu,aluno as al WHERE usu.matricula = al.idusuario;
+
+select * from usuario;
+
+
+---------------------Inserção de dados no banco-----------------------
+INSERT INTO departamento (nome) VALUES 
+('Engenharia Elétrica'),
+('Engenharia de Computação'),
+('Ciência da Computação'),
+('Engenharia de Redes'),
+('Engenharia Mecatrônica');
+
+
+INSERT INTO usuario (matricula, nome, cpf, email, senha) VALUES
+(100, 'Alice Nunes', '11111111111', 'alice@email.com', 'senha1'),
+(101, 'Bruno Lima', '22222222222', 'bruno@email.com', 'senha2'),
+(102, 'Carla Souza', '33333333333', 'carla@email.com', 'senha3'),
+(103, 'Daniel Reis', '44444444444', 'daniel@email.com', 'senha4'),
+(104, 'Eduarda Melo', '55555555555', 'eduarda@email.com', 'senha5');
+
+INSERT INTO aluno (curso, ira, data_ingresso, idpesquisa, idbolsa, idusuario) VALUES
+('Engenharia Elétrica', 7.5, '2021-03-01', NULL, NULL, 100),
+('Engenharia de Computação', 8.2, '2020-08-01', NULL, NULL, 101),
+('Engenharia de Redes', 6.8, '2022-01-01', NULL, NULL, 102),
+('Engenharia Mecatrônica', 9.0, '2023-02-01', NULL, NULL, 103),
+('Ciência da Computação', 7.1, '2021-09-01', NULL, NULL, 104);
+
+
+----Conflito de IDs
+INSERT INTO usuario (matricula, nome, cpf, email, senha) VALUES
+(200, 'Fabio Torres', '66666666666', 'fabio@email.com', 'senha6'),
+(201, 'Gisela Rocha', '77777777777', 'gisela@email.com', 'senha7'),
+(202, 'Heitor Ramos', '88888888888', 'heitor@email.com', 'senha8'),
+(203, 'Irene Lopes', '99999999999', 'irene@email.com', 'senha9'),
+(204, 'João Pedro', '00000000000', 'joao@email.com', 'senha10');
+
+INSERT INTO professor (titulo, cargahoraria, idusuario) VALUES
+('Mestre', 40, 200),
+('Doutor', 30, 201),
+('Especialista', 20, 202),
+('Doutor', 25, 203),
+('Mestre', 35, 204);
+
+select * from usuario;
+
+
+INSERT INTO coordenador (inicio_coordenador, fimmandato, iddepartamento, idusuario) VALUES
+(2018, '2022-12-31', 1, 200),
+(2019, '2023-12-31', 2, 201),
+(2020, '2024-12-31', 3, 202),
+(2021, '2025-12-31', 4, 203),
+(2022, '2026-12-31', 5, 204);
+
+
+INSERT INTO area (nomearea) VALUES
+('Computação'),
+('Elétrica'),
+('Mecatrônica'),
+('Redes'),
+('Inteligência Artificial');
+
+
+INSERT INTO especialidade (nomeespecialidade) VALUES
+('Sistemas Embarcados'),
+('Redes Neurais'),
+('Circuitos Integrados'),
+('Automação Industrial'),
+('Engenharia de Software');
+
+INSERT INTO pesquisa (datainicio, datafim, titulopesquisa, estadopesquisa, vagasvoluntarias, vagasremuneradas) VALUES
+('2020-01-01', '2021-01-01', 'Pesquisa sobre circuitos', 'Concluída', 2, 1),
+('2021-05-01', '2022-05-01', 'Pesquisa em redes neurais', 'Concluída', 1, 2),
+('2022-02-01', '2023-02-01', 'Estudo sobre IA', 'Em andamento', 3, 2),
+('2023-03-01', '2024-03-01', 'Simulações em mecatrônica', 'Planejada', 0, 4),
+('2024-01-01', '2025-01-01', 'Desenvolvimento de software', 'Planejada', 1, 1);
+
+
+INSERT INTO bolsa (valor_bolsa) VALUES
+(800.00),
+(1000.00),
+(1200.00),
+(1500.00),
+(1800.00);
+
+
+INSERT INTO revista (isbn, titulo, datapublicacao) VALUES
+('978-85-333-0010-0', 'Revista Elétrica', '2020-06-15'),
+('978-85-333-0020-0', 'Revista Computação', '2021-07-20'),
+('978-85-333-0030-0', 'Revista Redes', '2022-03-10'),
+('978-85-333-0040-0', 'Revista Mecatrônica', '2023-01-05'),
+('978-85-333-0050-0', 'Revista AI', '2024-04-22');
+----Tabelas relacionais many to many----
+-- pertence (departamento-professor)
+INSERT INTO pertence (id_dep, matricula) VALUES
+(1, 200),
+(2, 201),
+(3, 202),
+(4, 203),
+(5, 204);
+
+-- tem (area-departamento)
+INSERT INTO tem (idarea, id_dep) VALUES
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5);
+
+-- tem1 (area-especialidade)
+INSERT INTO tem1 (idarea, idespecialidade) VALUES
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5);
+
+-- pertence1 (especialidade-pesquisa)
+INSERT INTO pertence1 (idespecialidade, idpesquisa) VALUES
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5);
+
+-- realiza (pesquisa-professor)
+INSERT INTO realiza (idpesquisa, idprofessor) VALUES
+(1, 200),
+(2, 201),
+(3, 202),
+(4, 203),
+(5, 204);
+
+-- oferece (departamento-pesquisa)
+INSERT INTO oferece (id_dep, idpesquisa) VALUES
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5);
+
+-- disponibiliza (departamento-bolsa)
+INSERT INTO disponibiliza (id_dep, idbolsa) VALUES
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5);
+
+-- abrange (revista-area)
+INSERT INTO abrange (isbn, idarea) VALUES
+('978-85-333-0010-0', 1),
+('978-85-333-0020-0', 2),
+('978-85-333-0030-0', 3),
+('978-85-333-0040-0', 4),
+('978-85-333-0050-0', 5);
+
+-- publica (revista-pesquisa)
+INSERT INTO publica (isbn, idpesquisa) VALUES
+('978-85-333-0010-0', 1),
+('978-85-333-0020-0', 2),
+('978-85-333-0030-0', 3),
+('978-85-333-0040-0', 4),
+('978-85-333-0050-0', 5);
+
+-- atuar (area-professor)
+INSERT INTO atuar (idarea, idprofessor) VALUES
+(1, 200),
+(2, 201),
+(3, 202),
+(4, 203),
+(5, 204);
+
+-- solicita_pesquisa (professor-departamento)
+INSERT INTO solicita_pesquisa (idprofessor, id_dep) VALUES
+(200, 1),
+(201, 2),
+(202, 3),
+(203, 4),
+(204, 5);
+
+SELECT 
+  u.matricula,
+  u.nome,
+  u.email,
+  a.curso,
+  a.ira,
+  b.valor_bolsa,
+  p.titulopesquisa
+FROM aluno a
+JOIN usuario u ON u.matricula = a.idusuario
+LEFT JOIN bolsa b ON b.idbolsa = a.idbolsa
+LEFT JOIN pesquisa p ON p.idpesquisa = a.idpesquisa;
+
+SELECT 
+  u.nome AS professor,
+  d.nome AS departamento,
+  ps.titulopesquisa
+FROM professor pr
+JOIN usuario u ON u.matricula = pr.idusuario
+LEFT JOIN pertence p ON p.matricula = pr.idusuario
+LEFT JOIN departamento d ON d.id_dep = p.id_dep
+LEFT JOIN realiza r ON r.idprofessor = pr.idusuario
+LEFT JOIN pesquisa ps ON ps.idpesquisa = r.idpesquisa;
+
+
+
+
