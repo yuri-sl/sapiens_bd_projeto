@@ -32,17 +32,11 @@ export default function UsuarioPage() {
       <table className="w-full border-4 border-solid border-black">
         <thead className="mx-auto w-5 table-auto border-collapse bg-gray-200 shadow-md">
           <tr className="w-max bg-blue-500 px-8">
-            <th className="px-4 py-4 text-left text-white" colSpan={2}>
+            <th className="px-4 py-4 text-left text-white" colSpan={9}>
               Usuários cadastrados no departamento
-            </th>
-            <th colSpan={8}>
-              <button className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700">
-                Adicionar novo usuário
-              </button>
             </th>
           </tr>
           <tr>
-            <th className="px-4 py-2">Item</th>
             <th className="px-4 py-2">Matrícula</th>
             <th className="px-4 py-2">Foto de Perfil</th>
             <th className="px-4 py-2">Nome</th>
@@ -56,12 +50,19 @@ export default function UsuarioPage() {
         </thead>
         <tbody>
           {usuarios?.map((u) => (
-            <tr key={u.matricula}>
-              <td className="px-4 py-2">
-                <input type="checkbox" className="h-6 w-8 accent-blue-600" />
-              </td>
+            <tr className="text-center" key={u.matricula}>
               <td className="px-4 py-2">{u.matricula}</td>
-              <td className="px-4 py-2">N/A</td>
+              <td className="px-4 py-2">
+                {u.fotousuario ? (
+                  <img
+                    src={`data:image/png;base64,${Buffer.from(u.fotousuario).toString("base64")}`}
+                    alt="Foto de perfil"
+                    className="h-14 w-14 rounded-full object-cover border"
+                  />
+                ) : (
+                  <span className="text-gray-400 italic">Sem foto</span>
+                )}
+              </td>
               <td className="px-4 py-2">{u.nome}</td>
               <td className="px-4 py-2">{u.cpf}</td>
               <td className="px-4 py-2">{u.email}</td>

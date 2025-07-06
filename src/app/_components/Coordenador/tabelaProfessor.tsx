@@ -59,7 +59,6 @@ export default function ProfessorTabela() {
             </th>
           </tr>
           <tr className="bg-gray-200 text-black">
-            <th className="px-4 py-2">Check</th>
             <th className="px-4 py-2">Matrícula</th>
             <th className="px-4 py-2">Nome</th>
             <th className="px-4 py-2">CPF</th>
@@ -75,10 +74,7 @@ export default function ProfessorTabela() {
         </thead>
         <tbody>
           {professores?.map((u) => (
-            <tr key={u.matricula}>
-              <td className="px-4 py-2">
-                <input type="checkbox" className="h-6 w-8 accent-blue-600" />
-              </td>
+            <tr className="text-center" key={u.matricula}>
               <td className="px-4 py-2">{u.matricula}</td>
               <td className="px-4 py-2">{u.nome}</td>
               <td className="px-4 py-2">{u.cpf}</td>

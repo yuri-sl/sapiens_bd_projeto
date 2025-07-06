@@ -12,7 +12,8 @@ export default function AddNewAluno({ onClose }: { onClose: () => void }) {
   const [curso, setCurso] = useState("");
   const [ira, setIra] = useState("0");
   const [dataIngresso, setDataIngresso] = useState("");
-
+  const [foto, setFoto] = useState<string | null>(null);
+    
   const handleSubmit = () => {
     cadastrarAluno.mutate({
       nome,
@@ -25,10 +26,27 @@ export default function AddNewAluno({ onClose }: { onClose: () => void }) {
       data_ingresso: dataIngresso,
       idpesquisa: null,
       idbolsa: null,
-    });
+      fotousuario: foto,
+        });
 
     onClose();
   };
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result;
+        if (typeof result === "string") {
+          // Remove prefixo 'data:image/png;base64,...' se presente
+          const base64 = result.split(",")[1];
+          setFoto(base64); // agora é uma string base64
+        }
+      };
+      reader.readAsDataURL(file); // lê como base64
+    }
+  };
+  
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 bg-opacity-90">
@@ -64,8 +82,16 @@ export default function AddNewAluno({ onClose }: { onClose: () => void }) {
             <input  required type="password" value={senha} onChange={(e) => setSenha(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
             <label>Foto (opcional)</label>
-            <button className="bg-gray-500 rounded-lg p-2 w-fit">Selecionar imagem</button>
-          </div>
+            <input type="file" accept="image/*" onChange={handleFileChange} />          </div>
+            {foto && (
+              <img
+                src={`data:image/jpeg;base64,${btoa(
+                  String.fromCharCode(...Array.from(foto))
+                )}`}
+                alt="Pré-visualização da foto"
+                className="w-32 h-32 object-cover mt-2 rounded border"
+              />
+            )}
         </div>
 
         <div className="mt-6 flex justify-end gap-4">

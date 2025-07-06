@@ -53,9 +53,6 @@ export default function AreaPesquisa() {
         <tbody>
           {usuarios?.map((u) => (
             <tr key={u.matricula}>
-              <td className="px-4 py-2">
-                <input type="checkbox" className="h-6 w-8 accent-blue-600" />
-              </td>
               <td className="px-4 py-2">01</td>
               <td className="px-4 py-2">INteligencia Artificial</td>
               <td className="px-4 py-2">Processamento de Lingaugem Natural</td>

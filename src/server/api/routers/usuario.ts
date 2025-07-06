@@ -15,8 +15,7 @@ export const usuarioRouter = createTRPCRouter({
         email: z.string().email(),
         senha: z.string(),
         matricula: z.number(),
-        fotousuario: z.instanceof(Buffer).optional(),
-      }),
+        fotousuario: z.string().nullable().optional(),      }),
     )
     .mutation(async ({ input }) => {
       return db.usuario.create({ data: input });
@@ -38,45 +37,56 @@ export const usuarioRouter = createTRPCRouter({
       SELECT * FROM vw_alunos
     `;
   }),
-  cadastrarAlunoProcedure: publicProcedure
-  .input(z.object({
-    matricula: z.number(),
-    nome: z.string(),
-    cpf: z.string(),
-    email: z.string().email(),
-    senha: z.string(),
-    curso: z.string(),
-    ira: z.number(),
-    data_ingresso: z.string(), // precisa ser string ISO
-    idpesquisa: z.number().nullable().optional(),
-    idbolsa: z.number().nullable().optional(),
-  }))
-  .mutation(async ({ input, ctx }) => {
-    await ctx.db.$executeRawUnsafe(`
-      SELECT cadastrar_aluno(
-        $1::INT,
-        $2::VARCHAR,
-        $3::VARCHAR,
-        $4::VARCHAR,
-        $5::VARCHAR,
-        $6::VARCHAR,
-        $7::NUMERIC,
-        $8::DATE,
-        $9::INT,
-        $10::INT
-      )
-    `, 
-    input.matricula,
-    input.nome,
-    input.cpf,
-    input.email,
-    input.senha,
-    input.curso,
-    input.ira,
-    input.data_ingresso,
-    input.idpesquisa ?? null,
-    input.idbolsa ?? null);
-  }),
+  cadastrarAlunoProcedure: publicProcedure.input(
+    z.object({
+      matricula: z.number(),
+      nome: z.string(),
+      cpf: z.string(),
+      email: z.string().email(),
+      senha: z.string(),
+      curso: z.string(),
+      ira: z.number(),
+      data_ingresso: z.string(), // precisa ser string ISO
+      idpesquisa: z.number().nullable().optional(),
+      idbolsa: z.number().nullable().optional(),
+      fotousuario: z.string().nullable().optional(),    })
+  ).mutation(async ({ input, ctx }) => {
+    try {
+      const fotoBuffer = input.fotousuario
+        ? Buffer.from(input.fotousuario, "base64")
+        : null;
+      await ctx.db.$executeRawUnsafe(`
+        SELECT cadastrar_aluno(
+          $1::INT,
+          $2::VARCHAR,
+          $3::VARCHAR,
+          $4::VARCHAR,
+          $5::VARCHAR,
+          $6::VARCHAR,
+          $7::NUMERIC,
+          $8::DATE,
+          $9::INT,
+          $10::INT,
+          $11::BYTEA
+        )
+      `,
+        input.matricula,
+        input.nome,
+        input.cpf,
+        input.email,
+        input.senha,
+        input.curso,
+        input.ira,
+        input.data_ingresso,
+        input.idpesquisa ?? null,
+        input.idbolsa ?? null,
+        fotoBuffer
+      );
+    } catch (error) {
+      console.error("Erro ao executar cadastrar_aluno:", error);
+      throw new Error("Erro ao cadastrar aluno.");
+    }
+  }),  
   cadastrarProfessorProcedure: publicProcedure
   .input(z.object({
     matricula: z.number(),
@@ -122,6 +132,38 @@ export const usuarioRouter = createTRPCRouter({
       where: { matricula: input.matricula },
     });
   }),
+  atualizarAlunoProcedure: publicProcedure
+  .input(z.object({
+    matricula: z.number(),
+    nome: z.string(),
+    cpf: z.string(),
+    email: z.string().email(),
+    senha: z.string(),
+    curso: z.string(),
+    ira: z.number(),
+    data_ingresso: z.string(),
+  }))
+  .mutation(async ({ input, ctx }) => {
+    await ctx.db.usuario.update({
+      where: { matricula: input.matricula },
+      data: {
+        nome: input.nome,
+        cpf: input.cpf,
+        email: input.email,
+        senha: input.senha,
+      },
+    });
+
+    await ctx.db.aluno.update({
+      where: { idusuario: input.matricula },
+      data: {
+        curso: input.curso,
+        ira: input.ira,
+        data_ingresso: new Date(input.data_ingresso),
+      },
+    });
+  }),
+
 
 
 

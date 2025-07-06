@@ -45,7 +45,7 @@ export default function UsuarioPage() {
       <table className="w-full border-4 border-solid border-black">
         <thead className="bg-blue-500 text-white">
           <tr>
-            <th className="px-4 py-4 text-left" colSpan={6}>
+            <th className="px-4 py-4 text-left" colSpan={10}>
               Alunos cadastrados no departamento
             </th>
             <th colSpan={2}>
@@ -58,26 +58,35 @@ export default function UsuarioPage() {
             </th>
           </tr>
           <tr className="bg-gray-200 text-black">
-            <th className="px-4 py-2">Check</th>
             <th className="px-4 py-2">Matrícula</th>
             <th className="px-4 py-2">Nome</th>
             <th className="px-4 py-2">CPF</th>
             <th className="px-4 py-2">Email</th>
             <th className="px-4 py-2">Senha</th>
+            <th className="px-4 py-2">Curso</th>
+            <th className="px-4 py-2">IRA</th>
+            <th className="px-4 py-2">DataIngresso</th>
+            <th className="px-4 py-2">Pesquisa</th>
+            <th className="px-4 py-2">Bolsa</th>
             <th className="px-4 py-2" colSpan={2}>Ações</th>
           </tr>
         </thead>
         <tbody>
           {alunos?.map((u) => (
-            <tr key={u.matricula}>
-              <td className="px-4 py-2">
-                <input type="checkbox" className="h-6 w-8 accent-blue-600" />
-              </td>
+            <tr className="text-center" key={u.matricula}>
               <td className="px-4 py-2">{u.matricula}</td>
               <td className="px-4 py-2">{u.nome}</td>
               <td className="px-4 py-2">{u.cpf}</td>
               <td className="px-4 py-2">{u.email}</td>
               <td className="px-4 py-2">{u.senha}</td>
+              <td className="px-4 py-2">{u.curso}</td>
+              <td className="px-4 py-2">{u.ira}</td>
+              <td className="px-4 py-2">
+                {u.data_ingresso ? new Date(u.data_ingresso).toLocaleDateString() : "N/A"}
+              </td>
+              <td className="px-4 py-2">{u.idpesquisa ?? "Sem pesquisa"}</td>
+              <td className="px-4 py-2">{u.idbolsa ?? "Sem bolsa"}</td>
+
               <td className="px-4 py-2">
                 <button
                   onClick={() => {

@@ -1,8 +1,25 @@
 import React, { useState } from "react";
 import { api } from "~/trpc/react";
+import { useEffect } from "react";
 
-export default function EditAluno({ onClose }: { onClose: () => void }) {
-  const cadastrarAluno = api.usuario.cadastrarAlunoProcedure.useMutation();
+interface EditAlunoProps {
+  onClose: () => void;
+    aluno: {
+      matricula: number;
+      nome: string;
+      cpf: string;
+      email: string;
+      senha: string;
+      curso: string;
+      ira: number;
+      data_ingresso: string;
+      idpesquisa?: number | null;
+      idbolsa?: number | null;
+    };
+  }
+
+export default function EditAluno({ onClose, aluno }: EditAlunoProps) {{
+  const atualizarAluno = api.usuario.atualizarAlunoProcedure.useMutation();
 
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
@@ -12,23 +29,51 @@ export default function EditAluno({ onClose }: { onClose: () => void }) {
   const [curso, setCurso] = useState("");
   const [ira, setIra] = useState("0");
   const [dataIngresso, setDataIngresso] = useState("");
+  const [idPesquisa,setIdPesquisa] = useState("");
+  const [idBolsa,setIdBolsa] = useState("");
+  const [foto, setFoto] = useState<ArrayBuffer | null>(null);
+
 
   const handleSubmit = () => {
-    cadastrarAluno.mutate({
-      nome,
-      cpf,
-      email,
-      senha,
-      matricula: parseInt(matricula),
-      curso,
-      ira: parseFloat(ira),
-      data_ingresso: dataIngresso,
-      idpesquisa: null,
-      idbolsa: null,
-    });
-
-    onClose();
+    atualizarAluno.mutate(
+      {
+        matricula: parseInt(matricula),
+        nome,
+        cpf,
+        email,
+        senha,
+        curso,
+        ira: parseFloat(ira),
+        data_ingresso: dataIngresso,
+      },
+      {
+        onSuccess: () => {
+          onClose();
+        },
+      }
+    );
   };
+
+const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (file) {
+    const arrayBuffer = await file.arrayBuffer();
+    setFoto(arrayBuffer);
+  }
+};
+  useEffect(() => {
+    if (aluno) {
+      setNome(aluno.nome);
+      setCpf(aluno.cpf);
+      setEmail(aluno.email);
+      setSenha(aluno.senha);
+      setMatricula(aluno.matricula.toString());
+      setCurso(aluno.curso);
+      setIra(aluno.ira.toString());
+    }
+  }, [aluno]);
+  
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 bg-opacity-90">
@@ -52,8 +97,6 @@ export default function EditAluno({ onClose }: { onClose: () => void }) {
             <label>IRA</label>
             <input type="number" value={ira} onChange={(e) => setIra(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
-            <label>Data de Ingresso</label>
-            <input type="date" value={dataIngresso} onChange={(e) => setDataIngresso(e.target.value)} className="bg-gray-100 p-2 rounded" />
           </div>
 
           <div className="flex flex-col gap-2 w-1/2">
@@ -63,9 +106,15 @@ export default function EditAluno({ onClose }: { onClose: () => void }) {
             <label>Senha</label>
             <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
+            <label>Pesquisa</label>
+            <input  value={idPesquisa} onChange={(e) => setSenha(e.target.value)} className="bg-gray-100 p-2 rounded" />
+
+            <label>Bolsa</label>
+            <input value={idBolsa} onChange={(e) => setSenha(e.target.value)} className="bg-gray-100 p-2 rounded" />
+
+
             <label>Foto (opcional)</label>
-            <button className="bg-gray-500 rounded-lg p-2 w-fit">Selecionar imagem</button>
-          </div>
+            <input type="file" accept="image/*" onChange={handleFileChange} />          </div>
         </div>
 
         <div className="mt-6 flex justify-end gap-4">
