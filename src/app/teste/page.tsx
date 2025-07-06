@@ -8,14 +8,20 @@ import Navbar from "../_components/navbar";
 import LoginBox from "../_components/loginBox";
 import InformationsComponentCoord from "../_components/Coordenador/informationsComponent";
 import UsuarioPage from "../_components/Coordenador/tabelaUsuario";
+import AlunoTabela from "../_components/Coordenador/tabelaAluno";
+import AreaPesquisa from "../_components/Coordenador/areaPesquisa";
+import ProfessorTabela from "../_components/Coordenador/tabelaProfessor";
 
 export default function Home() {
   return (
     <div>
       <Navbar />
       <h1>Hello Sapiens</h1>
-      <TabelaDepartamento></TabelaDepartamento>
       <UsuarioPage />
+      <AlunoTabela />
+      <ProfessorTabela/>
+      <TabelaDepartamento />
+      <AreaPesquisa/>
       <LoginBox></LoginBox>
       <InformationsComponentCoord />
     </div>

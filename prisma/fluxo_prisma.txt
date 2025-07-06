@@ -8,3 +8,4 @@ npx prisma generate
 --- Subir as mudanças do Prisma para o PgADmin ---
 
 npx prisma migrate dev → Aplica mudanças do Prisma para o banco 🡒
+npx prisma generate
