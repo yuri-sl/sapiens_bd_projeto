@@ -132,6 +132,46 @@ export const usuarioRouter = createTRPCRouter({
       where: { matricula: input.matricula },
     });
   }),
+  atualizarProfessorProcedure: publicProcedure
+  .input(z.object({
+    matricula: z.number(),
+    nome: z.string(),
+    cpf: z.string(),
+    email: z.string().email(),
+    senha: z.string(),
+    titulo: z.string(),
+    cargaHoraria: z.number(),
+    fotousuario: z
+    .union([z.instanceof(Uint8Array), z.null()])
+    .optional()  }))
+  .mutation(async ({ input, ctx }) => {
+    try {
+      await ctx.db.$executeRawUnsafe(`
+        SELECT atualizar_professor(
+          $1::INT,
+          $2::VARCHAR,
+          $3::VARCHAR,
+          $4::VARCHAR,
+          $5::VARCHAR,
+          $6::VARCHAR,
+          $7::INT,
+          $8::BYTEA
+        )
+      `,
+        input.matricula,
+        input.nome,
+        input.cpf,
+        input.email,
+        input.senha,
+        input.titulo,
+        input.cargaHoraria,
+        input.fotousuario ?? null
+      );
+    } catch (error) {
+      console.error("Erro ao atualizar professor:", error);
+      throw new Error("Falha ao atualizar os dados do professor.");
+    }
+  }),
   atualizarAlunoProcedure: publicProcedure
   .input(z.object({
     matricula: z.number(),

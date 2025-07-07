@@ -125,10 +125,10 @@ export default function ProfessorTabela() {
 
       {showEditModal && professorSelecionado && (
         <EditProfessor
-          usuario={professorSelecionado}
+          professor={professorSelecionado}
           onClose={() => setShowEditModal(false)}
-          onConfirm={handleEditConfirm}
         />
+
       )}
     </div>
   );
