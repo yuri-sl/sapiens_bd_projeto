@@ -1,30 +1,42 @@
+'use client'
+
 import { api } from "~/trpc/react";
 import { useState } from "react";
+import DeleteEspecialidade from "./deleteEspecialidade";
 
 export default function AreaPesquisa() {
   const { data: areas, isLoading, refetch} = api.area.listarAreasView.useQuery();
-  const createUsuario = api.usuario.create.useMutation();
+  const deletarEspecialidade = api.area.deletarEspecialidade.useMutation();
+  const [showModal, setShowModal] = useState(false);
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [especialidadeSelecionada, setEspecialidadeSelecionada] = useState<any>(null);
+  const [deletandoId, setDeletandoId] = useState<number | null>(null);
 
-  const [nome, setNome] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [matricula, setmatricula] = useState("");
-
-  const handleSubmit = () => {
-    createUsuario.mutate({
-      nome,
-      cpf,
-      email,
-      senha,
-      matricula: parseInt(matricula),
-    });
-    setNome("");
-    setCpf("");
-    setEmail("");
-    setSenha("");
-    setmatricula("");
+  const handleDeletar = (idespecialidade: number) => {
+    if (deletandoId === idespecialidade) return; // já em andamento
+  
+    setDeletandoId(idespecialidade);
+  
+    deletarEspecialidade.mutate(
+      { idespecialidade },
+      {
+        onSuccess: () => {
+          setDeletandoId(null);
+          // talvez: refetch(), toast, etc.
+        },
+        onError: () => {
+          setDeletandoId(null);
+        },
+      }
+    );
   };
+  
+
+  const handleDelete = () => {
+    setShowRemoveModal(false);
+    refetch();
+  };
+
 
   return (
     <div className="max-h-[500px] overflow-y-auto">
@@ -52,7 +64,7 @@ export default function AreaPesquisa() {
         </thead>
         <tbody>
           {areas?.map((a) => (
-            <tr key={`${a.idarea}-${a.idespecialidade}`}>
+            <tr key={`${a.idarea}-${a.idespecialidade}`} className="text-center">
               <td className="px-4 py-2">{a.idarea}</td>
               <td className="px-4 py-2">{a.nomearea}</td>
               <td className="px-4 py-2">{a.nomeespecialidade}</td>
@@ -66,7 +78,13 @@ export default function AreaPesquisa() {
                 </button>
               </td>
               <td className="px-4 py-2">
-                <button onClick={() => deletar(d.ID_Dep)} title="Deletar">
+                <button 
+                  onClick={() => {
+                    setEspecialidadeSelecionada(a);
+                    setShowRemoveModal(true);
+                  }} 
+                  title="Deletar"
+                >
                   <img
                     src="/assets/Trash 2.png"
                     alt="Ícone de deletar"
@@ -78,6 +96,30 @@ export default function AreaPesquisa() {
           ))}
         </tbody>
       </table>
+
+      {showRemoveModal && especialidadeSelecionada && (
+        <DeleteEspecialidade
+          nomeEspecialidade={especialidadeSelecionada.nomeespecialidade}
+          idEspecialidade={especialidadeSelecionada.idespecialidade}
+          onClose={() => setShowRemoveModal(false)}
+          onConfirm={handleDelete}
+        />
+      )}
     </div>
   );
 }
+
+  // const handleSubmit = () => {
+  //   createUsuario.mutate({
+  //     nome,
+  //     cpf,
+  //     email,
+  //     senha,
+  //     matricula: parseInt(matricula),
+  //   });
+  //   setNome("");
+  //   setCpf("");
+  //   setEmail("");
+  //   setSenha("");
+  //   setmatricula("");
+  // };

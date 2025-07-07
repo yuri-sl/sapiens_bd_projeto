@@ -3,10 +3,46 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { db } from "~/server/db";
 
 export const areaRouter = createTRPCRouter({
-    listarAreasView: publicProcedure.query(async ({ ctx }) => {
+  listarAreasView: publicProcedure.query(async ({ ctx }) => {
     return await ctx.db.$queryRaw`
       SELECT * FROM vw_area_esp
     `;
-  })
+  }),
 
-})
+  deletarEspecialidade: publicProcedure
+    .input(z.object({idespecialidade: z.number()}))
+    .mutation(async ({ ctx, input }) => {
+      // Responsável por deletar a referência na tabela de relacionamento entre área e especialidade
+      await ctx.db.tem1.deleteMany({
+        where: { idespecialidade: input.idespecialidade },
+      });
+
+      // Responsável por deletar a especialidade solicitada
+      await ctx.db.especialidade.delete({
+        where: { idespecialidade: input.idespecialidade },
+      });
+    }),
+
+  deletarArea: publicProcedure
+    .input(z.object({idarea: z.number()}))
+    .mutation(async ({ctx, input}) => {
+      // Responsável por deletar a referência na tabela de relacionamento entre área e especialidade
+      await ctx.db.tem1.deleteMany({
+        where: { idarea: input.idarea },
+      });
+
+      // Responsável por deletar todas as especialidades relacionadas a área deletada
+      await ctx.db.especialidade.deleteMany({
+        where: {
+          tem1: {
+            none: {},
+          },
+        },
+      });
+
+      // Responsável por deletar a área solicitada
+      await ctx.db.area.delete({
+        where: {idarea: input.idarea}
+      })
+    })
+});
