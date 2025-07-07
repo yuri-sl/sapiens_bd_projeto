@@ -6,11 +6,13 @@ import TabelaUsuario from "../_components/Coordenador/tabelaUsuario";
 import ProfessorTabela from "../_components/Coordenador/tabelaProfessor";
 import AlunoTabela from "../_components/Coordenador/tabelaAluno";
 import TabelaDepartamento from "../_components/Coordenador/tabelaDepartamento";
+import EspecialidadePesquisa from "../_components/Coordenador/especialidadePesquisa";
 import AreaPesquisa from "../_components/Coordenador/areaPesquisa";
 
 export default function Home() {
   const [abaPrincipal, setAbaPrincipal] = useState<"usuarios" | "projetos" | "areas" | null>("usuarios");
   const [abaUsuarios, setAbaUsuarios] = useState<"todos" | "professores" | "alunos">("todos");
+  const [abaCategorias, setAbaCategorias] = useState<"areas" | "especialidades">("areas");
 
   return (
     <div>
@@ -26,7 +28,7 @@ export default function Home() {
             <FolderKanban size={20} /> Projetos
           </button>
           <button onClick={() => setAbaPrincipal("areas")} className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
-            <BookOpenText size={20} /> Áreas
+            <BookOpenText size={20} /> Categorias
           </button>
         </div>
 
@@ -59,8 +61,20 @@ export default function Home() {
         )}
 
         {abaPrincipal === "areas" && (
-          <div className="mt-4 border-t-2 pt-4 border-gray-300">
-            <AreaPesquisa />
+          <div>
+            <div className="flex justify-center gap-4 mb-4 border-b-2 border-gray-300 pb-2">
+              <button onClick={() => setAbaCategorias("areas")} className="flex items-center gap-2 bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
+                Áreas
+              </button>
+              <button onClick={() => setAbaCategorias("especialidades")} className="flex items-center gap-2 bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
+                Especialidades
+              </button>
+            </div>
+
+            <div className="mt-4">
+              {abaCategorias === "areas" && <AreaPesquisa />}
+              {abaCategorias === "especialidades" && <EspecialidadePesquisa />}
+            </div>
           </div>
         )}
       </div>

@@ -9,6 +9,12 @@ export const areaRouter = createTRPCRouter({
     `;
   }),
 
+  listarAreas: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.db.$queryRaw`
+      SELECT * FROM area
+    `;
+  }),
+
   deletarEspecialidade: publicProcedure
     .input(z.object({idespecialidade: z.number()}))
     .mutation(async ({ ctx, input }) => {
@@ -16,6 +22,14 @@ export const areaRouter = createTRPCRouter({
       await ctx.db.tem1.deleteMany({
         where: { idespecialidade: input.idespecialidade },
       });
+
+      // Responsável por deletar a referência na tabela de relacionamento entre pesquisa e especialidade
+      await ctx.db.pertence1.deleteMany({
+        where: { idespecialidade: input.idespecialidade },
+      });
+
+      // SE O CRUD DE PESQUISAS FOR CRIADO,TALVEZ SEJA BOM EXCLUIR
+      //  AS PESQUISAS ASSOCIADAS À ESPECIALIDADE EXCLUIDA AQUI
 
       // Responsável por deletar a especialidade solicitada
       await ctx.db.especialidade.delete({
