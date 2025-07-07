@@ -45,14 +45,50 @@ export const areaRouter = createTRPCRouter({
         where: { idarea: input.idarea },
       });
 
-      // Responsável por deletar todas as especialidades relacionadas a área deletada
-      await ctx.db.especialidade.deleteMany({
+      // Responsável por deletar a referência na tabela de relacionamento entre área e departamento
+      await ctx.db.tem.deleteMany({
+        where: { idarea: input.idarea },
+      });
+
+      // Responsável por deletar a referência na tabela de relacionamento entre área e revista
+      await ctx.db.abrange.deleteMany({
+        where: { idarea: input.idarea },
+      });
+
+      // Responsável por deletar a referência na tabela de relacionamento entre área e professor
+      await ctx.db.atuar.deleteMany({
+        where: { idarea: input.idarea },
+      });
+
+      // Responsável por encontrar todas as especialidades relacionadas a área deletada
+      const especialidadesDaAreaDeletada = await ctx.db.especialidade.findMany({
         where: {
           tem1: {
-            none: {},
+            none: {}, 
           },
         },
       });
+
+      // SE O CRUD DE PESQUISAS FOR CRIADO,TALVEZ SEJA BOM EXCLUIR
+      //  AS PESQUISAS ASSOCIADAS À ESPECIALIDADE EXCLUIDA AQUI
+
+      // Responsável por apagar o relacionamento de todas as especialidades a serem apagadas com pesquisa
+      await ctx.db.pertence1.deleteMany({
+        where: {
+          idespecialidade: {
+            in: especialidadesDaAreaDeletada.map((e) => e.idespecialidade),
+          },
+        },
+      });
+
+      // Responsável por deletar todas as especialidades relacionadas a área deletada
+      await ctx.db.especialidade.deleteMany({
+      where: {
+        idespecialidade: {
+          in: especialidadesDaAreaDeletada.map((e) => e.idespecialidade),
+        },
+      },
+    });
 
       // Responsável por deletar a área solicitada
       await ctx.db.area.delete({

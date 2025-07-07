@@ -2,7 +2,6 @@
 
 import { api } from "~/trpc/react";
 import { useState } from "react";
-import DeleteEspecialidade from "./deleteEspecialidade";
 import DeleteArea from "./deleteArea";
 
 export default function AreaPesquisa() {
