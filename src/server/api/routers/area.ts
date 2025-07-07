@@ -94,5 +94,33 @@ export const areaRouter = createTRPCRouter({
       await ctx.db.area.delete({
         where: {idarea: input.idarea}
       })
-    })
+    }),
+
+    cadastrarAreaProcedure: publicProcedure
+      .input(z.object({
+        nomeArea: z.string(),
+        idDep: z.number()
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await ctx.db.$executeRaw`
+          SELECT cadastrar_area(
+            ${input.nomeArea},
+            ${input.idDep}
+          )
+        `;
+      }),
+
+    cadastrarEspecialidadeProcedure: publicProcedure
+      .input(z.object({
+        nomeEspecialidade: z.string(),
+        idArea: z.number()
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await ctx.db.$executeRaw`
+          SELECT cadastrar_especialidade(
+            ${input.nomeEspecialidade},
+            ${input.idArea}
+          )
+        `;
+      })
 });
