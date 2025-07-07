@@ -2,7 +2,7 @@ import { api } from "~/trpc/react";
 import { useState } from "react";
 
 export default function AreaPesquisa() {
-  const { data: usuarios, isLoading } = api.usuario.getAll.useQuery();
+  const { data: areas, isLoading, refetch} = api.area.listarAreasView.useQuery();
   const createUsuario = api.usuario.create.useMutation();
 
   const [nome, setNome] = useState("");
@@ -51,11 +51,11 @@ export default function AreaPesquisa() {
           </tr>
         </thead>
         <tbody>
-          {usuarios?.map((u) => (
-            <tr key={u.matricula}>
-              <td className="px-4 py-2">01</td>
-              <td className="px-4 py-2">INteligencia Artificial</td>
-              <td className="px-4 py-2">Processamento de Lingaugem Natural</td>
+          {areas?.map((a) => (
+            <tr key={`${a.idarea}-${a.idespecialidade}`}>
+              <td className="px-4 py-2">{a.idarea}</td>
+              <td className="px-4 py-2">{a.nomearea}</td>
+              <td className="px-4 py-2">{a.nomeespecialidade}</td>
               <td className="px-4 py-2">
                 <button onClick={() => editar(u.matricula)}>
                   <img
