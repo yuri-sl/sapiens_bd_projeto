@@ -13,7 +13,9 @@ model departamento {
   coordenador       coordenador[]
   disponibiliza     disponibiliza[]
   oferece           oferece[]
+  pertence          pertence[]
   solicita_pesquisa solicita_pesquisa[]
+  tem               tem[]
 }
 
 model usuario {
@@ -25,6 +27,7 @@ model usuario {
   fotousuario Bytes?
   aluno       aluno?
   coordenador coordenador?
+  pertence    pertence[]
   professor   professor?
 
   @@unique([cpf, email])
@@ -111,8 +114,10 @@ model oferece {
 }
 
 model pertence {
-  id_dep    Int
-  matricula Int
+  id_dep       Int
+  matricula    Int
+  departamento departamento @relation(fields: [id_dep], references: [id_dep], onDelete: NoAction, onUpdate: NoAction)
+  usuario      usuario      @relation(fields: [matricula], references: [matricula], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([id_dep, matricula])
 }
@@ -188,9 +193,10 @@ model solicita_pesquisa {
 }
 
 model tem {
-  idarea Int
-  id_dep Int
-  area   area @relation(fields: [idarea], references: [idarea], onDelete: NoAction, onUpdate: NoAction)
+  idarea       Int
+  id_dep       Int
+  departamento departamento @relation(fields: [id_dep], references: [id_dep], onDelete: NoAction, onUpdate: NoAction)
+  area         area         @relation(fields: [idarea], references: [idarea], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([idarea, id_dep])
 }

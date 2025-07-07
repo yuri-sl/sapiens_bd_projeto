@@ -270,6 +270,15 @@ FROM usuario u
 JOIN professor p ON p.idusuario = u.matricula;
 select * from vw_professores;
 
+CREATE OR REPLACE VIEW vw_area_esp AS
+SELECT
+  a.IDArea,
+  a.NomeArea,
+  e.NomeEspecialidade
+FROM area a 
+JOIN tem1 ON a.IDArea = tem1.IDArea
+JOIN especialidade e ON tem1.IDespecialidade = e.IDespecialidade;
+
 --- CRIAÇÃO DE PROCEDURE ----
 CREATE OR REPLACE FUNCTION cadastrar_aluno(
   p_matricula INT,
