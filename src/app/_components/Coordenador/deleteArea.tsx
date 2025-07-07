@@ -36,10 +36,9 @@ export default function DeleteArea({ onClose, onConfirm, idArea, nomeArea }: Pro
         <div className="mt-6 flex justify-end gap-4">
           <button
             onClick={handleSubmit}
-            disabled={deletarArea.isLoading}
             className="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded font-bold disabled:opacity-50"
           >
-            {deletarArea.isLoading ? "Removendo..." : "Sim"}
+            Sim
           </button>
           <button
             onClick={onClose}

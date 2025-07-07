@@ -3,38 +3,25 @@
 import { api } from "~/trpc/react";
 import { useState } from "react";
 import DeleteArea from "./deleteArea";
+import AddNewArea from "./addArea";
 
 export default function AreaPesquisa() {
   const { data: areas, isLoading, refetch} = api.area.listarAreas.useQuery();
   const deletarArea = api.area.deletarArea.useMutation();
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [areaSelecionada, setAreaSelecionada] = useState<any>(null);
   const [deletandoId, setDeletandoId] = useState<number | null>(null);
-
-  const handleDeletar = (idarea: number) => {
-    if (deletandoId === idarea) return; // já em andamento
   
-    setDeletandoId(idarea);
-  
-    deletarArea.mutate(
-      { idarea },
-      {
-        onSuccess: () => {
-          setDeletandoId(null);
-          // talvez: refetch(), toast, etc.
-        },
-        onError: () => {
-          setDeletandoId(null);
-        },
-      }
-    );
-  };
-  
-
   const handleDelete = () => {
     setShowRemoveModal(false);
     refetch();
   };
+
+  const handleCreate = () => {
+    setShowCreateModal(false);
+    refetch();
+  }
 
 
   return (
@@ -47,7 +34,10 @@ export default function AreaPesquisa() {
               Áreas de pesquisas do departamento
             </th>
             <th colSpan={3}>
-              <button className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700">
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700"
+              >
                 Adicionar nova área
               </button>
             </th>
@@ -101,6 +91,14 @@ export default function AreaPesquisa() {
           idArea={areaSelecionada.idarea}
           onClose={() => setShowRemoveModal(false)}
           onConfirm={handleDelete}
+        />
+      )}
+
+
+      {showCreateModal && (
+        <AddNewArea
+          onClose={() => setShowCreateModal(false)}
+          onConfirm={handleCreate}
         />
       )}
     </div>

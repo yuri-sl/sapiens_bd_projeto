@@ -104,8 +104,8 @@ export const areaRouter = createTRPCRouter({
       .mutation(async ({ input, ctx }) => {
         await ctx.db.$executeRaw`
           SELECT cadastrar_area(
-            ${input.nomeArea},
-            ${input.idDep}
+            ${input.nomeArea}::VARCHAR,
+            ${input.idDep}::INT
           )
         `;
       }),
