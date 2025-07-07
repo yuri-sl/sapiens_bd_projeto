@@ -274,6 +274,7 @@ CREATE OR REPLACE VIEW vw_area_esp AS
 SELECT
   a.IDArea,
   a.NomeArea,
+  e.IDEspecialidade,
   e.NomeEspecialidade
 FROM area a 
 JOIN tem1 ON a.IDArea = tem1.IDArea
