@@ -1,16 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { api } from "~/trpc/react";
 
+interface Usuario {
+    matricula: number;
+    nome: string;
+    cpf: string;
+    email: string;
+    senha: string;
+  }
+  
+  interface Props {
+    onClose: () => void;
+    usuario: Usuario;
+  }
+
+
 export default function EditUsuario({ usuario, onClose }: { usuario: any; onClose: () => void }) {
-  const cadastrarProfessor = api.usuario.cadastrarProfessorProcedure.useMutation();
+  const atualizarUsuario = api.usuario.atualizarUsuarioProcedure.useMutation();
 
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [matricula, setMatricula] = useState("");
-  const [titulo, setTitulo] = useState("");
-  const [cargaHoraria, setCargaHoraria] = useState("");
+  const [foto, setFoto] = useState<ArrayBuffer | null>(null);
+  
 
   useEffect(() => {
     if (usuario) {
@@ -19,24 +33,40 @@ export default function EditUsuario({ usuario, onClose }: { usuario: any; onClos
       setEmail(usuario.email || "");
       setSenha(usuario.senha || "");
       setMatricula(usuario.matricula?.toString() || "");
-      setTitulo(usuario.titulo || "");
-      setCargaHoraria(usuario.cargaHoraria?.toString() || "");
     }
   }, [usuario]);
 
   const handleSubmit = () => {
-    cadastrarProfessor.mutate({
+    atualizarUsuario.mutate({
       nome,
       cpf,
       email,
       senha,
       matricula: parseInt(matricula),
-      titulo,
-      cargaHoraria: parseInt(cargaHoraria),
-    });
-
-    onClose();
+      fotousuario: foto ? Buffer.from(foto).toString("base64") : null,
+    },
+    {
+        onSuccess: () => {
+            onClose();
+        },
+    }
+);
+};
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const arrayBuffer = await file.arrayBuffer();
+      setFoto(arrayBuffer);
+    }
   };
+  useEffect(() => {
+    if (!usuario) return;
+    setNome(usuario.nome);
+    setCpf(usuario.cpf);
+    setEmail(usuario.email);
+    setSenha(usuario.senha);
+    setMatricula(usuario.matricula.toString());
+  }, [usuario]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 bg-opacity-90">
@@ -48,7 +78,7 @@ export default function EditUsuario({ usuario, onClose }: { usuario: any; onClos
             <label>Matrícula</label>
             <input value={matricula} onChange={(e) => setMatricula(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
-            <label>Nome do Professor</label>
+            <label>Nome do usuário</label>
             <input value={nome} onChange={(e) => setNome(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
             <label>CPF</label>
@@ -64,7 +94,7 @@ export default function EditUsuario({ usuario, onClose }: { usuario: any; onClos
             <input value={senha} onChange={(e) => setSenha(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
             <label>Foto (opcional)</label>
-            <button className="bg-gray-500 rounded-lg p-2 w-fit">Selecionar imagem</button>
+            <input type="file" accept="image/*" onChange={handleFileChange} />
           </div>
         </div>
 

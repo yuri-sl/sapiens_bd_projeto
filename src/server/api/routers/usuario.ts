@@ -141,11 +141,11 @@ export const usuarioRouter = createTRPCRouter({
     senha: z.string(),
     titulo: z.string(),
     cargaHoraria: z.number(),
-    fotousuario: z
-    .union([z.instanceof(Uint8Array), z.null()])
-    .optional()  }))
+    fotousuario: z.string().nullable().optional(),
+  }))
   .mutation(async ({ input, ctx }) => {
     try {
+      const fotoBufferProf = input.fotousuario ? Buffer.from(input.fotousuario,"base64") : null
       await ctx.db.$executeRawUnsafe(`
         SELECT atualizar_professor(
           $1::INT,
@@ -165,7 +165,7 @@ export const usuarioRouter = createTRPCRouter({
         input.senha,
         input.titulo,
         input.cargaHoraria,
-        input.fotousuario ?? null
+        fotoBufferProf
       );
     } catch (error) {
       console.error("Erro ao atualizar professor:", error);
@@ -203,10 +203,34 @@ export const usuarioRouter = createTRPCRouter({
       },
     });
   }),
+  atualizarUsuarioProcedure: publicProcedure
+  .input(z.object({
+    matricula: z.number(),
+    nome: z.string(),
+    cpf: z.string(),
+    email: z.string().email(),
+    senha: z.string(),
+    fotousuario: z.string().nullable().optional(),
+  }))
+  .mutation(async ({ input, ctx }) => {
+    try {
+      const fotoBufferUsuario = input.fotousuario
+        ? Buffer.from(input.fotousuario, "base64")
+        : null;
 
-
-
-
-
-
+      await ctx.db.usuario.update({
+        where: { matricula: input.matricula },
+        data: {
+          nome: input.nome,
+          cpf: input.cpf,
+          email: input.email,
+          senha: input.senha,
+          fotousuario: fotoBufferUsuario ?? undefined, // evita sobrescrever com null se não enviado
+        },
+      });
+    } catch (error) {
+      console.error("Erro ao atualizar usuário:", error);
+      throw new Error("Falha ao atualizar os dados do usuário.");
+    }
+  }),
 });

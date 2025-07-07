@@ -26,19 +26,43 @@ export default function EditProfessor({ onClose, professor }: Props) {
   const [matricula, setMatricula] = useState("");
   const [titulo, setTitulo] = useState("");
   const [cargaHoraria, setCargaHoraria] = useState("");
-  const [fotoUsuario, setFotoUsuario] = useState<Uint8Array | null>(null);
+  const [foto, setFoto] = useState<ArrayBuffer | null>(null);
 
-  const handleFotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSubmit = () => {
+    const carga = parseInt(cargaHoraria);
+    if (isNaN(carga)) {
+      alert("Carga Horária inválida. Insira um número válido.");
+      return;
+    }
+    atualizarProfessor.mutate(
+      {
+        matricula: parseInt(matricula),
+        nome,
+        cpf,
+        email,
+        senha,
+        titulo,
+        cargaHoraria: carga,
+        fotousuario: foto ? Buffer.from(foto).toString("base64") : null,
+      },
+      {
+        onSuccess: () => {
+          onClose();
+        },
+      }
+    );
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const arrayBuffer = await file.arrayBuffer();
-      setFotoUsuario(new Uint8Array(arrayBuffer));
+      setFoto(arrayBuffer);
     }
   };
 
   useEffect(() => {
     if (!professor) return;
-
     setNome(professor.nome);
     setCpf(professor.cpf);
     setEmail(professor.email);
@@ -47,21 +71,6 @@ export default function EditProfessor({ onClose, professor }: Props) {
     setTitulo(professor.titulo);
     setCargaHoraria(professor.cargaHoraria?.toString() || "");
   }, [professor]);
-
-  const handleSubmit = () => {
-    atualizarProfessor.mutate({
-      matricula: parseInt(matricula),
-      nome,
-      cpf,
-      email,
-      senha,
-      titulo,
-      cargaHoraria: parseInt(cargaHoraria),
-      fotousuario: fotoUsuario, // já é Uint8Array
-    });
-
-    onClose();
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 bg-opacity-90">
@@ -94,7 +103,7 @@ export default function EditProfessor({ onClose, professor }: Props) {
             <input value={cargaHoraria} onChange={(e) => setCargaHoraria(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
             <label>Foto (opcional)</label>
-            <input type="file" accept="image/*" onChange={handleFotoChange} />
+            <input type="file" accept="image/*" onChange={handleFileChange} />
           </div>
         </div>
 
