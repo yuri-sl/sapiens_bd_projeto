@@ -4,11 +4,13 @@ import { api } from "~/trpc/react";
 import { useState } from "react";
 import DeleteArea from "./deleteArea";
 import AddNewArea from "./addArea";
+import EditArea from "./editArea";
 
 export default function AreaPesquisa() {
   const { data: areas, isLoading, refetch} = api.area.listarAreas.useQuery();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [areaSelecionada, setAreaSelecionada] = useState<any>(null);
   
   const handleDelete = () => {
@@ -18,6 +20,11 @@ export default function AreaPesquisa() {
 
   const handleCreate = () => {
     setShowCreateModal(false);
+    refetch();
+  };
+
+  const handleUpdate = () => {
+    setShowEditModal(false);
     refetch();
   };
 
@@ -55,7 +62,12 @@ export default function AreaPesquisa() {
               <td className="px-4 py-2">{a.idarea}</td>
               <td className="px-4 py-2">{a.nomearea}</td>
               <td className="px-4 py-2">
-                <button onClick={() => editar(u.matricula)}>
+                <button 
+                  onClick={() => {
+                    setShowEditModal(true);
+                    setAreaSelecionada(a);
+                  }}
+                >
                   <img
                     src="/assets/edit.png"
                     alt="Editar"
@@ -97,6 +109,14 @@ export default function AreaPesquisa() {
         <AddNewArea
           onClose={() => setShowCreateModal(false)}
           onConfirm={handleCreate}
+        />
+      )}
+
+      {showEditModal && areaSelecionada && (
+        <EditArea 
+          onClose={() => setShowEditModal(false)}
+          onConfirm={handleUpdate}
+          area={areaSelecionada}
         />
       )}
     </div>

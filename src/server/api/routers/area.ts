@@ -6,12 +6,14 @@ export const areaRouter = createTRPCRouter({
   listarAreasView: publicProcedure.query(async ({ ctx }) => {
     return await ctx.db.$queryRaw`
       SELECT * FROM vw_area_esp
+      ORDER BY idarea ASC;
     `;
   }),
 
   listarAreas: publicProcedure.query(async ({ ctx }) => {
     return await ctx.db.$queryRaw`
       SELECT * FROM area
+      ORDER BY idarea ASC;
     `;
   }),
 
@@ -122,5 +124,20 @@ export const areaRouter = createTRPCRouter({
             ${input.idArea}::INT
           )
         `;
-      })
+      }),
+
+      editarAreaProcedure: publicProcedure
+        .input(z.object({
+          idArea: z.number(),
+          nomeArea: z.string()
+        }))
+        .mutation(async ({ input, ctx }) =>  {
+          await ctx.db.area.update({
+            where: { idarea: input.idArea },
+            data: {
+              nomearea: input.nomeArea
+            },
+        })
+
+        }),
 });
