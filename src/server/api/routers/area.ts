@@ -98,46 +98,87 @@ export const areaRouter = createTRPCRouter({
       })
     }),
 
-    cadastrarAreaProcedure: publicProcedure
-      .input(z.object({
-        nomeArea: z.string(),
-        idDep: z.number()
-      }))
-      .mutation(async ({ input, ctx }) => {
-        await ctx.db.$executeRaw`
-          SELECT cadastrar_area(
-            ${input.nomeArea}::VARCHAR,
-            ${input.idDep}::INT
-          )
-        `;
-      }),
+  cadastrarAreaProcedure: publicProcedure
+    .input(z.object({
+      nomeArea: z.string(),
+      idDep: z.number()
+    }))
+    .mutation(async ({ input, ctx }) => {
+      await ctx.db.$executeRaw`
+        SELECT cadastrar_area(
+          ${input.nomeArea}::VARCHAR,
+          ${input.idDep}::INT
+        )
+      `;
+    }),
 
-    cadastrarEspecialidadeProcedure: publicProcedure
-      .input(z.object({
-        nomeEspecialidade: z.string(),
-        idArea: z.number()
-      }))
-      .mutation(async ({ input, ctx }) => {
-        await ctx.db.$executeRaw`
-          SELECT cadastrar_especialidade(
-            ${input.nomeEspecialidade}::VARCHAR,
-            ${input.idArea}::INT
-          )
-        `;
-      }),
+  cadastrarEspecialidadeProcedure: publicProcedure
+    .input(z.object({
+      nomeEspecialidade: z.string(),
+      idArea: z.number()
+    }))
+    .mutation(async ({ input, ctx }) => {
+      await ctx.db.$executeRaw`
+        SELECT cadastrar_especialidade(
+          ${input.nomeEspecialidade}::VARCHAR,
+          ${input.idArea}::INT
+        )
+      `;
+    }),
 
-      editarAreaProcedure: publicProcedure
-        .input(z.object({
-          idArea: z.number(),
-          nomeArea: z.string()
-        }))
-        .mutation(async ({ input, ctx }) =>  {
-          await ctx.db.area.update({
-            where: { idarea: input.idArea },
-            data: {
-              nomearea: input.nomeArea
-            },
-        })
+  editarAreaProcedure: publicProcedure
+    .input(z.object({
+      idArea: z.number(),
+      nomeArea: z.string()
+    }))
+    .mutation(async ({ input, ctx }) =>  {
+      await ctx.db.area.update({
+        where: { idarea: input.idArea },
+        data: {
+          nomearea: input.nomeArea
+        },
+      })
+    }),
 
-        }),
+  editarEspecialidadeProcedure: publicProcedure
+    .input(z.object({
+      novoIdArea: z.number(),
+      antigoIdArea: z.number(),
+      idEspecialidade: z.number(),
+      nomeEspecialidade: z.string()
+    }))
+    .mutation(async ({ input, ctx }) =>  {
+      await ctx.db.especialidade.update({
+        where: { idespecialidade: input.idEspecialidade },
+        data: {
+          nomeespecialidade: input.nomeEspecialidade
+        },
+      })
+
+      // Verificar se existe área para novoIdArea
+      const novoIdAreaExiste = await ctx.db.area.findUnique({
+        where: {idarea: input.novoIdArea}
+      })
+
+      if (!novoIdAreaExiste) {
+        throw new Error(`Área com ID ${input.novoIdArea} não existe!!!`);
+      }
+
+      // Apenas depois da verificação, deleto o vínculo da especialidade com a área para linkar com outra
+      await ctx.db.tem1.delete({
+        where: {
+          idarea_idespecialidade: {
+            idarea: input.antigoIdArea,
+            idespecialidade: input.idEspecialidade
+          },
+        },
+      });
+
+      await ctx.db.tem1.create({
+        data: {
+          idarea: input.novoIdArea,
+          idespecialidade: input.idEspecialidade,
+        },
+      });
+    }),
 });

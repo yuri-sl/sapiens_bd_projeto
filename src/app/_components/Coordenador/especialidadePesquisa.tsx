@@ -4,11 +4,13 @@ import { api } from "~/trpc/react";
 import { useState } from "react";
 import DeleteEspecialidade from "./deleteEspecialidade";
 import AddNewEspecialidade from "./addEspecialidade";
+import EditEspecialidade from "./editEspecialidade";
 
 export default function EspecialidadePesquisa() {
   const { data: areas, isLoading, refetch} = api.area.listarAreasView.useQuery();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [especialidadeSelecionada, setEspecialidadeSelecionada] = useState<any>(null);
 
   
@@ -20,6 +22,11 @@ export default function EspecialidadePesquisa() {
 
   const handleCreate = () => {
     setShowCreateModal(false);
+    refetch();
+  };
+
+  const handleUpdate = () => {
+    setShowEditModal(false);
     refetch();
   };
 
@@ -52,13 +59,18 @@ export default function EspecialidadePesquisa() {
           </tr>
         </thead>
         <tbody>
-          {areas?.map((a) => (
-            <tr key={`${a.idarea}-${a.idespecialidade}`} className="text-center">
-              <td className="px-4 py-2">{a.idarea}</td>
-              <td className="px-4 py-2">{a.nomearea}</td>
-              <td className="px-4 py-2">{a.nomeespecialidade}</td>
+          {areas?.map((e) => (
+            <tr key={`${e.idarea}-${e.idespecialidade}`} className="text-center">
+              <td className="px-4 py-2">{e.idarea}</td>
+              <td className="px-4 py-2">{e.nomearea}</td>
+              <td className="px-4 py-2">{e.nomeespecialidade}</td>
               <td className="px-4 py-2">
-                <button onClick={() => editar(u.matricula)}>
+                <button 
+                  onClick={() => {
+                    setShowEditModal(true);
+                    setEspecialidadeSelecionada(e);
+                  }}
+                >
                   <img
                     src="/assets/edit.png"
                     alt="Editar"
@@ -69,7 +81,7 @@ export default function EspecialidadePesquisa() {
               <td className="px-4 py-2">
                 <button 
                   onClick={() => {
-                    setEspecialidadeSelecionada(a);
+                    setEspecialidadeSelecionada(e);
                     setShowRemoveModal(true);
                   }} 
                   title="Deletar"
@@ -99,6 +111,14 @@ export default function EspecialidadePesquisa() {
         <AddNewEspecialidade 
           onClose={() => setShowCreateModal(false)}
           onConfirm={handleCreate}
+        />
+      )}
+
+      {showEditModal && especialidadeSelecionada && (
+        <EditEspecialidade 
+          onClose={() => setShowEditModal(false)}
+          onConfirm={handleUpdate}
+          especialidade={especialidadeSelecionada}
         />
       )}
     </div>
