@@ -355,6 +355,29 @@ select * from usuario as usu,aluno as al WHERE usu.matricula = al.idusuario;
 
 select * from usuario;
 
+CREATE OR REPLACE FUNCTION cadastrar_area(
+    a_nome VARCHAR,
+    d_id INT
+) RETURNS VOID AS $$
+DECLARE
+    a_id INT;
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM departamento WHERE id_dep = d_id
+    ) THEN 
+        INSERT INTO area (nomearea) 
+        VALUES (a_nome)
+        RETURNING idarea INTO a_id;
+
+        INSERT INTO tem (idarea, id_dep)
+        VALUES (a_id, d_id);
+        
+    ELSE
+        RAISE EXCEPTION 'O departamento de ID % não existe.', d_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
 
 ---------------------Inserção de dados no banco-----------------------
 INSERT INTO departamento (nome) VALUES 
