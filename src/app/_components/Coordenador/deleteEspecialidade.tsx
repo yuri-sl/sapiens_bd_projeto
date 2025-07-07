@@ -36,10 +36,9 @@ export default function DeleteEspecialidade({ onClose, onConfirm, idEspecialidad
         <div className="mt-6 flex justify-end gap-4">
           <button
             onClick={handleSubmit}
-            disabled={deletarEspecialidade.isLoading}
             className="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded font-bold disabled:opacity-50"
           >
-            {deletarEspecialidade.isLoading ? "Removendo..." : "Sim"}
+            Sim
           </button>
           <button
             onClick={onClose}

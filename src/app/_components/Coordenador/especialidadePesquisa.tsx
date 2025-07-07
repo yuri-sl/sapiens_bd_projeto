@@ -3,36 +3,23 @@
 import { api } from "~/trpc/react";
 import { useState } from "react";
 import DeleteEspecialidade from "./deleteEspecialidade";
+import AddNewEspecialidade from "./addEspecialidade";
 
 export default function EspecialidadePesquisa() {
   const { data: areas, isLoading, refetch} = api.area.listarAreasView.useQuery();
-  const deletarEspecialidade = api.area.deletarEspecialidade.useMutation();
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [especialidadeSelecionada, setEspecialidadeSelecionada] = useState<any>(null);
-  const [deletandoId, setDeletandoId] = useState<number | null>(null);
 
-  const handleDeletar = (idespecialidade: number) => {
-    if (deletandoId === idespecialidade) return; // já em andamento
-  
-    setDeletandoId(idespecialidade);
-  
-    deletarEspecialidade.mutate(
-      { idespecialidade },
-      {
-        onSuccess: () => {
-          setDeletandoId(null);
-          // talvez: refetch(), toast, etc.
-        },
-        onError: () => {
-          setDeletandoId(null);
-        },
-      }
-    );
-  };
   
 
   const handleDelete = () => {
     setShowRemoveModal(false);
+    refetch();
+  };
+
+  const handleCreate = () => {
+    setShowCreateModal(false);
     refetch();
   };
 
@@ -47,7 +34,10 @@ export default function EspecialidadePesquisa() {
               Especialidades de pesquisas do departamento
             </th>
             <th colSpan={3}>
-              <button className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700">
+              <button 
+                onClick={() => setShowCreateModal(true)}
+                className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700"
+              >
                 Adicionar nova especialidade
               </button>
             </th>
@@ -102,6 +92,13 @@ export default function EspecialidadePesquisa() {
           idEspecialidade={especialidadeSelecionada.idespecialidade}
           onClose={() => setShowRemoveModal(false)}
           onConfirm={handleDelete}
+        />
+      )}
+
+      {showCreateModal && (
+        <AddNewEspecialidade 
+          onClose={() => setShowCreateModal(false)}
+          onConfirm={handleCreate}
         />
       )}
     </div>

@@ -7,11 +7,9 @@ import AddNewArea from "./addArea";
 
 export default function AreaPesquisa() {
   const { data: areas, isLoading, refetch} = api.area.listarAreas.useQuery();
-  const deletarArea = api.area.deletarArea.useMutation();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [areaSelecionada, setAreaSelecionada] = useState<any>(null);
-  const [deletandoId, setDeletandoId] = useState<number | null>(null);
   
   const handleDelete = () => {
     setShowRemoveModal(false);
@@ -21,7 +19,7 @@ export default function AreaPesquisa() {
   const handleCreate = () => {
     setShowCreateModal(false);
     refetch();
-  }
+  };
 
 
   return (

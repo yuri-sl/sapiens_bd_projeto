@@ -1,21 +1,21 @@
 import React, { useState } from "react";
 import { api } from "~/trpc/react";
 
-export default function AddNewArea({ onClose, onConfirm }: { onClose: () => void, onConfirm: () => void}) {
-    const criarArea = api.area.cadastrarAreaProcedure.useMutation({
+export default function AddNewEspecialidade({ onClose, onConfirm }: { onClose: () => void, onConfirm: () => void}) {
+    const criarEspecialidade = api.area.cadastrarEspecialidadeProcedure.useMutation({
         onSuccess: () => {
           onConfirm(); // chama refetch + fecha modal no componente pai
         },
     });
 
-    const [nomeArea, setNomeArea] = useState('');
-    const [idDep, setIdDep] = useState(0);
+    const [nomeEspecialidade, setNomeArea] = useState('');
+    const [idArea, setIdDep] = useState(0);
 
 
     const handleSubmit = () => {
-        if (!nomeArea || !idDep)
+        if (!nomeEspecialidade || !idArea)
             return;
-        criarArea.mutate({ nomeArea : nomeArea, idDep: idDep });
+        criarEspecialidade.mutate({ nomeEspecialidade : nomeEspecialidade, idArea: idArea });
     };
     
     return (
@@ -24,11 +24,11 @@ export default function AddNewArea({ onClose, onConfirm }: { onClose: () => void
                 <h1 className="font-bold text-blue-900 text-xl mb-4">Adicionar nova Área</h1>
 
                 <div className="flex flex-col gap-2 w-1/2">
-                    <label>Nome da Área</label>
-                    <input type="text" required value={nomeArea} onChange={(e) => setNomeArea(e.target.value)} className="bg-gray-100 p-2 rounded" />
+                    <label>Nome da Especialidade</label>
+                    <input type="text" required value={nomeEspecialidade} onChange={(e) => setNomeArea(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
-                    <label>ID do Departamento Relacionado</label>
-                    <input  type='number' required value={idDep} onChange={(e) => setIdDep(Number(e.target.value))} className="bg-gray-100 p-2 rounded" />
+                    <label>ID da Área Relacionada</label>
+                    <input  type='number' required value={idArea} onChange={(e) => setIdDep(Number(e.target.value))} className="bg-gray-100 p-2 rounded" />
                 </div>
 
 
