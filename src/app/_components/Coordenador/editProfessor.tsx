@@ -8,7 +8,7 @@ interface Professor {
   email: string;
   senha: string;
   titulo: string;
-  cargaHoraria?: number;
+  cargahoraria?: number;
   idarea: number;
 }
 
@@ -78,7 +78,7 @@ export default function EditProfessor({ onClose, professor }: Props) {
     setSenha(professor.senha);
     setMatricula(professor.matricula.toString());
     setTitulo(professor.titulo);
-    setCargaHoraria(professor.cargaHoraria?.toString() || "");
+    setCargaHoraria(professor.cargahoraria?.toString() || "");
     setIdArea(professor.idarea);
   }, [professor]);
 

@@ -5,7 +5,6 @@ import RemoveProfessor from "./deleteProfessor";
 import EditProfessor from "./editProfessor";
 
 export default function ProfessorTabela() {
-  const createUsuario = api.usuario.create.useMutation();
   const {
     data: professores,
     isLoading,
@@ -126,7 +125,10 @@ export default function ProfessorTabela() {
       {showEditModal && professorSelecionado && (
         <EditProfessor
           professor={professorSelecionado}
-          onClose={() => setShowEditModal(false)}
+          onClose={() => {
+            setShowEditModal(false);
+            refetch();
+          }}
         />
 
       )}
