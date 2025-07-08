@@ -320,6 +320,7 @@ CREATE OR REPLACE FUNCTION cadastrar_professor(
     p_senha VARCHAR,
     p_titulo VARCHAR,
     p_cargaHoraria INT,
+    p_fotousuario BYTEA,
     p_idArea INT
 ) RETURNS VOID AS $$
 BEGIN
@@ -332,7 +333,7 @@ BEGIN
     IF EXISTS (
         SELECT 1 FROM area WHERE idarea = p_idArea
     ) THEN
-        INSERT INTO atuar (idarea, idusuario)
+        INSERT INTO atuar (idarea, idprofessor)
         VALUES (p_idArea, p_matricula);
     END IF;
 END;
