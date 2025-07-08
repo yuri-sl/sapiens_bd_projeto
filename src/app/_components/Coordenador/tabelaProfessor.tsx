@@ -19,9 +19,9 @@ export default function ProfessorTabela() {
 
   const handleDelete = async () => {
     if (!professorSelecionado) return;
-    await api.usuario.deletarProfessor.useMutation().mutateAsync({
-      matricula: professorSelecionado.matricula,
-    });
+    // await api.usuario.deletarProfessor.useMutation().mutateAsync({
+    //   matricula: professorSelecionado.matricula,  // ESTE TRECHO ESTÁ DANDO ERRO DE "INVALID HOOK CALL", 
+    // });                                           // POIS UM HOOK REACT NÃO PODE SER CHAMADO DENTRO DE UMA FUNÇÃO COMO ESSA!!!
     setShowRemoveModal(false);
     refetch();
   };

@@ -137,6 +137,28 @@ export const usuarioRouter = createTRPCRouter({
   deletarProfessor: publicProcedure
   .input(z.object({ matricula: z.number() }))
   .mutation(async ({ ctx, input }) => {
+    // DELETES NECESSÁRIO PARA NÃO OCORRER ERRO DE CAHAVE ESTRANGEIRAS DE TABELA COM FKS DE PROFESSOR
+    await ctx.db.atuar.deleteMany({
+      where: { idprofessor: input.matricula }
+    });
+
+    await ctx.db.realiza.deleteMany({
+      where: { idprofessor: input.matricula }
+    });
+
+    await ctx.db.solicita_pesquisa.deleteMany({
+      where: { idprofessor: input.matricula }
+    });
+
+    await ctx.db.coordenador.deleteMany({
+      where: { idusuario: input.matricula }
+    });
+
+    await ctx.db.pertence.deleteMany({
+      where: { matricula: input.matricula }
+    });
+
+    // AGORA SIM POSSO DELETÁ-LO DA TABELA DE PROFESSOR E DE USUÁRIO
     await ctx.db.professor.delete({
       where: { idusuario: input.matricula },
     });
