@@ -17,7 +17,7 @@ export default function EditArea({ onClose, onConfirm, area }: Props) {
         },
     });
 
-    const [nomeArea, setNomeArea] = useState('');
+    const [nomeArea, setNomeArea] = useState(area.nomearea);
 
 
     const handleSubmit = () => {

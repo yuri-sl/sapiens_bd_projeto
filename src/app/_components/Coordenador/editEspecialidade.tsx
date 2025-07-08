@@ -19,14 +19,14 @@ export default function EditEspecialidade({ onClose, onConfirm, especialidade }:
         },
     });
 
-    const [nomeEspecialidade, setNomeEspecialidade] = useState('');
-    const [novoIdArea, setNovoIdArea] = useState(0);
+    const [nomeEspecialidade, setNomeEspecialidade] = useState(especialidade.nomeespecialidade);
+    const [novoIdArea, setNovoIdArea] = useState(especialidade.idarea);
 
 
     const handleSubmit = () => {
-        if (!nomeEspecialidade)
+        if (!nomeEspecialidade || !novoIdArea)
             return;
-        atualizarEspecialidade.mutate({ novoIdArea: novoIdArea, antigoIdArea: especialidade.idarea, idEspecialidade: especialidade.idespecialidade, nomeEspecialidade: especialidade.nomeespecialidade });
+        atualizarEspecialidade.mutate({ novoIdArea: novoIdArea, antigoIdArea: especialidade.idarea, idEspecialidade: especialidade.idespecialidade, nomeEspecialidade: nomeEspecialidade });
     };
     
     return (
