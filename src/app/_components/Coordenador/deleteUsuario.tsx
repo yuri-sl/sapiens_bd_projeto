@@ -11,9 +11,14 @@ interface Props {
 }
 
 export default function RemoveUsuario({ onClose, onConfirm, usuario }: Props) {
-  const deletar = api.usuario.deletarProfessor.useMutation({
-    onSuccess: onConfirm,
+  const deletar = api.usuario.deletarUsuarioComDependencias.useMutation({
+    onSuccess: () => {
+      onConfirm();
+      onClose();
+      refetch();
+    },
   });
+  
 
   const handleSubmit = () => {
     deletar.mutate({ matricula: usuario.matricula });

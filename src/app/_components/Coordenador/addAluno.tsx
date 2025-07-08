@@ -82,17 +82,18 @@ export default function AddNewAluno({ onClose }: { onClose: () => void }) {
             <input  required type="password" value={senha} onChange={(e) => setSenha(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
             <label>Foto (opcional)</label>
-            <input type="file" accept="image/*" onChange={handleFileChange} />          </div>
+            <input type="file" accept="image/*" onChange={handleFileChange} />
             {foto && (
               <img
-                src={`data:image/jpeg;base64,${btoa(
-                  String.fromCharCode(...Array.from(foto))
-                )}`}
+                src={`data:image/jpeg;base64,${foto}`}
                 alt="Pré-visualização da foto"
                 className="w-32 h-32 object-cover mt-2 rounded border"
               />
             )}
+            
+             </div>
         </div>
+
 
         <div className="mt-6 flex justify-end gap-4">
           <button

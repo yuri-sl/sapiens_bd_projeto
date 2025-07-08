@@ -152,6 +152,25 @@ export const usuarioRouter = createTRPCRouter({
       where: { matricula: input.matricula },
     });
   }),
+  deletarUsuarioComDependencias: publicProcedure
+  .input(z.object({ matricula: z.number() }))
+  .mutation(async ({ ctx, input }) => {
+    // Apaga de aluno se existir
+    await ctx.db.aluno.deleteMany({
+      where: { idusuario: input.matricula },
+    });
+
+    // Apaga de professor se existir
+    await ctx.db.professor.deleteMany({
+      where: { idusuario: input.matricula },
+    });
+
+    // Agora pode apagar o usuário
+    await ctx.db.usuario.delete({
+      where: { matricula: input.matricula },
+    });
+  }),
+
   atualizarProfessorProcedure: publicProcedure
   .input(z.object({
     matricula: z.number(),
