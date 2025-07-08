@@ -6,6 +6,11 @@ export default function AddNewEspecialidade({ onClose, onConfirm }: { onClose: (
         onSuccess: () => {
           onConfirm(); // chama refetch + fecha modal no componente pai
         },
+        onError: (error) => {
+            const match = error.message.match(/Message: `(?:ERROR:\s*)?([^`]*)`/);
+            const mensagem = match?.[1] || error.message;
+            alert('Erro ao cadastrar: ' + mensagem);
+        },
     });
 
     const [nomeEspecialidade, setNomeArea] = useState('');
@@ -13,8 +18,10 @@ export default function AddNewEspecialidade({ onClose, onConfirm }: { onClose: (
 
 
     const handleSubmit = () => {
-        if (!nomeEspecialidade || !idArea)
+        if (!nomeEspecialidade || !idArea) {
+            alert('Erro ao cadastrar: Preencha os dados solicitados')
             return;
+        };
         criarEspecialidade.mutate({ nomeEspecialidade : nomeEspecialidade, idArea: idArea });
     };
     
