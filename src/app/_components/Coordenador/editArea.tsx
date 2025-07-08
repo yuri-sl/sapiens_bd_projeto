@@ -21,8 +21,10 @@ export default function EditArea({ onClose, onConfirm, area }: Props) {
 
 
     const handleSubmit = () => {
-        if (!nomeArea)
+        if (!nomeArea) {
+            alert('Erro ao atualizar: Preencha os dados solicitados')
             return;
+        };
         atualizarArea.mutate({ nomeArea: nomeArea, idArea: area.idarea });
     };
     

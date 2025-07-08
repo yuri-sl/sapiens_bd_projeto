@@ -17,6 +17,12 @@ export default function EditEspecialidade({ onClose, onConfirm, especialidade }:
         onSuccess: () => {
           onConfirm(); // chama refetch + fecha modal no componente pai
         },
+
+        onError: (error) => {
+            const match = error.message.match(/Message: `(?:ERROR:\s*)?([^`]*)`/);
+            const mensagem = match?.[1] || error.message;
+            alert('Erro ao atualizar: ' + mensagem);
+        },
     });
 
     const [nomeEspecialidade, setNomeEspecialidade] = useState(especialidade.nomeespecialidade);
@@ -24,8 +30,10 @@ export default function EditEspecialidade({ onClose, onConfirm, especialidade }:
 
 
     const handleSubmit = () => {
-        if (!nomeEspecialidade || !novoIdArea)
+        if (!nomeEspecialidade || !novoIdArea) {
+            alert('Erro ao atualizar: Preencha os dados solicitados')
             return;
+        };
         atualizarEspecialidade.mutate({ novoIdArea: novoIdArea, antigoIdArea: especialidade.idarea, idEspecialidade: especialidade.idespecialidade, nomeEspecialidade: nomeEspecialidade });
     };
     

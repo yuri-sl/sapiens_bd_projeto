@@ -6,6 +6,11 @@ export default function AddNewArea({ onClose, onConfirm }: { onClose: () => void
         onSuccess: () => {
           onConfirm(); // chama refetch + fecha modal no componente pai
         },
+        onError: (error) => {
+            const match = error.message.match(/Message: `(?:ERROR:\s*)?([^`]*)`/);
+            const mensagem = match?.[1] || error.message;
+            alert('Erro ao cadastrar: ' + mensagem);
+        },
     });
 
     const [nomeArea, setNomeArea] = useState('');
@@ -13,8 +18,10 @@ export default function AddNewArea({ onClose, onConfirm }: { onClose: () => void
 
 
     const handleSubmit = () => {
-        if (!nomeArea || !idDep)
+        if (!nomeArea || !idDep) {
+            alert('Erro ao cadastrar: Preencha os dados solicitados')
             return;
+        };
         criarArea.mutate({ nomeArea : nomeArea, idDep: idDep });
     };
     
