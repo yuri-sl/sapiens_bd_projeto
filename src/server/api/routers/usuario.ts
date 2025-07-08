@@ -96,19 +96,33 @@ export const usuarioRouter = createTRPCRouter({
     senha: z.string(),
     titulo: z.string(),
     cargaHoraria: z.number(),
+    // fotousuario removido
   }))
   .mutation(async ({ input, ctx }) => {
-    await ctx.db.$executeRaw`
-      SELECT cadastrar_professor(
-        ${input.matricula},
-        ${input.nome},
-        ${input.cpf},
-        ${input.email},
-        ${input.senha},
-        ${input.titulo},
-        ${input.cargaHoraria}
-      )
-    `;
+    try {
+      await ctx.db.$executeRawUnsafe(`
+        SELECT cadastrar_professor(
+          $1::INT,
+          $2::VARCHAR,
+          $3::VARCHAR,
+          $4::VARCHAR,
+          $5::VARCHAR,
+          $6::VARCHAR,
+          $7::INT
+        )
+      `,
+        input.matricula,
+        input.nome,
+        input.cpf,
+        input.email,
+        input.senha,
+        input.titulo,
+        input.cargaHoraria
+      );
+    } catch (error) {
+      console.error("Erro ao cadastrar professor:", error);
+      throw new Error("Erro ao cadastrar professor.");
+    }
   }),
   deletarAluno: publicProcedure
   .input(z.object({ matricula: z.number() }))

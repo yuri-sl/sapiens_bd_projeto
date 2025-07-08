@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import { api } from "~/trpc/react";
 
 export default function AddNewProfessor({ onClose }: { onClose: () => void }) {
-  const cadastrarProfessor = api.usuario.cadastrarProfessorProcedure.useMutation();
+  const cadastrarProfessor = api.usuario.cadastrarProfessorProcedure.useMutation({
+    onSuccess: () => {
+      onClose();
+    },
+  });
 
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
@@ -11,6 +15,8 @@ export default function AddNewProfessor({ onClose }: { onClose: () => void }) {
   const [matricula, setMatricula] = useState("");
   const [titulo, setTitulo] = useState("");
   const [cargaHoraria, setCargaHoraria] = useState("");
+  const [foto, setFoto] = useState<string | null>(null);
+  
 
   const handleSubmit = () => {
     cadastrarProfessor.mutate({
@@ -21,9 +27,23 @@ export default function AddNewProfessor({ onClose }: { onClose: () => void }) {
       matricula: parseInt(matricula),
       titulo,
       cargaHoraria: parseInt(cargaHoraria),
+      fotousuario: foto,
     });
-
-    onClose();
+  };
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result;
+        if (typeof result === "string") {
+          // Remove prefixo 'data:image/png;base64,...' se presente
+          const base64 = result.split(",")[1];
+          setFoto(base64); // agora é uma string base64
+        }
+      };
+      reader.readAsDataURL(file); // lê como base64
+    }
   };
 
   return (
@@ -46,7 +66,7 @@ export default function AddNewProfessor({ onClose }: { onClose: () => void }) {
             <input value={email} onChange={(e) => setEmail(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
             <label>Senha</label>
-            <input value={senha} onChange={(e) => setSenha(e.target.value)} className="bg-gray-100 p-2 rounded" />
+            <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} className="bg-gray-100 p-2 rounded" />
           </div>
 
           <div className="flex flex-col gap-2 w-1/2">
@@ -57,7 +77,15 @@ export default function AddNewProfessor({ onClose }: { onClose: () => void }) {
             <input value={cargaHoraria} onChange={(e) => setCargaHoraria(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
             <label>Foto (opcional)</label>
-            <button className="bg-gray-500 rounded-lg p-2 w-fit">Selecionar imagem</button>
+            <input type="file" accept="image/*" onChange={handleFileChange} />
+
+            {foto && (
+              <img
+                src={`data:image/jpeg;base64,${foto}`}
+                alt="Pré-visualização da foto"
+                className="w-32 h-32 object-cover mt-2 rounded border"
+              />
+            )}
           </div>
         </div>
 
