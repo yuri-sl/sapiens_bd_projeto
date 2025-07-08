@@ -96,10 +96,13 @@ export const usuarioRouter = createTRPCRouter({
     senha: z.string(),
     titulo: z.string(),
     cargaHoraria: z.number(),
-    // fotousuario removido
+    fotousuario: z.string().nullable().optional(),
   }))
   .mutation(async ({ input, ctx }) => {
     try {
+      const fotoBuffer = input.fotousuario
+      ? Buffer.from(input.fotousuario, "base64")
+      : null;
       await ctx.db.$executeRawUnsafe(`
         SELECT cadastrar_professor(
           $1::INT,
@@ -108,7 +111,9 @@ export const usuarioRouter = createTRPCRouter({
           $4::VARCHAR,
           $5::VARCHAR,
           $6::VARCHAR,
-          $7::INT
+          $7::INT,
+          $8::BYTEA
+
         )
       `,
         input.matricula,
@@ -117,7 +122,8 @@ export const usuarioRouter = createTRPCRouter({
         input.email,
         input.senha,
         input.titulo,
-        input.cargaHoraria
+        input.cargaHoraria,
+        fotoBuffer
       );
     } catch (error) {
       console.error("Erro ao cadastrar professor:", error);

@@ -11,7 +11,8 @@ interface Props {
 export default function RemoveAluno({ onClose, onConfirm, matricula, nomeAluno }: Props) {
   const deletarAluno = api.usuario.deletarAluno.useMutation({
     onSuccess: () => {
-      onConfirm(); // chama refetch + fecha modal no componente pai
+      onConfirm();
+      onClose();
     },
   });
 

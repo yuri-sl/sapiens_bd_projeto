@@ -10,7 +10,10 @@ interface Props {
 
 export default function RemoveProfessor({ onClose, onConfirm, matricula, nomeProfessor }: Props) {
   const deletar = api.usuario.deletarProfessor.useMutation({
-    onSuccess: onConfirm,
+    onSuccess:  () => {
+      onConfirm();
+      onClose();
+    },
   });
 
   const handleSubmit = () => {
