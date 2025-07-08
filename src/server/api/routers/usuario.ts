@@ -264,7 +264,7 @@ export const usuarioRouter = createTRPCRouter({
     senha: z.string(),
     curso: z.string(),
     ira: z.number(),
-    data_ingresso: z.string(),
+    data_ingresso: z.string().optional(),
   }))
   .mutation(async ({ input, ctx }) => {
     await ctx.db.usuario.update({
@@ -282,9 +282,10 @@ export const usuarioRouter = createTRPCRouter({
       data: {
         curso: input.curso,
         ira: input.ira,
-        data_ingresso: new Date(input.data_ingresso),
+        ...(input.data_ingresso ? { data_ingresso: new Date(input.data_ingresso) } : {}),
       },
     });
+    
   }),
   atualizarUsuarioProcedure: publicProcedure
   .input(z.object({

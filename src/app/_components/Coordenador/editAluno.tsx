@@ -112,6 +112,8 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
             <label>Bolsa</label>
             <input value={idBolsa} onChange={(e) => setSenha(e.target.value)} className="bg-gray-100 p-2 rounded" />
 
+            <label>Data de Ingresso</label>
+            <input type="date" value={dataIngresso ?? ""} onChange={(e) => setDataIngresso(e.target.value || null)}/>
 
             <label>Foto (opcional)</label>
             <input type="file" accept="image/*" onChange={handleFileChange} />          </div>
