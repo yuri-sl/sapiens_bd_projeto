@@ -31,7 +31,6 @@ export default function TabelaDepartamento() {
           </th>
         </tr>
         <tr>
-          <th className="px-4 py-2">CheckBox</th>
           <th className="px-4 py-2">Título Pesquisa</th>
           <th className="px-4 py-2">Área</th>
           <th className="px-4 py-2">Especialidade</th>
@@ -41,12 +40,9 @@ export default function TabelaDepartamento() {
           <th className="px-4 py-2" colSpan={2}>Ações</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody className="text-center">
         {data?.map((d: { ID_Dep: number; Nome: string }) => (
           <tr key={d.ID_Dep}>
-            <td className="px-4 py-2">
-              <input type="checkbox" className="h-6 w-8 accent-blue-600" />
-            </td>
             <td className="px-4 py-2">Lagostas Forenses {d.Nome}</td>
             <td className="px-4 py-2">Lagostagem</td>
             <td className="px-4 py-2">Pesquisas de lagostas</td>
