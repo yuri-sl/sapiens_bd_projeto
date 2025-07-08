@@ -270,6 +270,16 @@ FROM usuario u
 JOIN professor p ON p.idusuario = u.matricula;
 select * from vw_professores;
 
+CREATE OR REPLACE VIEW vw_area_esp AS
+SELECT
+  a.IDArea,
+  a.NomeArea,
+  e.IDEspecialidade,
+  e.NomeEspecialidade
+FROM area a 
+JOIN tem1 ON a.IDArea = tem1.IDArea
+JOIN especialidade e ON tem1.IDespecialidade = e.IDespecialidade;
+
 --- CRIAÇÃO DE PROCEDURE ----
 CREATE OR REPLACE FUNCTION cadastrar_aluno(
   p_matricula INT,
@@ -344,6 +354,52 @@ select * from departamento;
 select * from usuario as usu,aluno as al WHERE usu.matricula = al.idusuario;
 
 select * from usuario;
+
+CREATE OR REPLACE FUNCTION cadastrar_area(
+    a_nome VARCHAR,
+    d_id INT
+) RETURNS VOID AS $$
+DECLARE
+    a_id INT;
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM departamento WHERE id_dep = d_id
+    ) THEN 
+        INSERT INTO area (nomearea) 
+        VALUES (a_nome)
+        RETURNING idarea INTO a_id;
+
+        INSERT INTO tem (idarea, id_dep)
+        VALUES (a_id, d_id);
+
+    ELSE
+        RAISE EXCEPTION 'O departamento de ID % não existe.', d_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION cadastrar_especialidade(
+    e_nome VARCHAR,
+    a_id INT
+) RETURNS VOID AS $$
+DECLARE
+    e_id INT;
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM area WHERE idarea = a_id
+    ) THEN 
+        INSERT INTO especialidade (nomeespecialidade) 
+        VALUES (e_nome)
+        RETURNING idespecialidade INTO e_id;
+
+        INSERT INTO tem1 (idarea, idespecialidade)
+        VALUES (a_id, e_id);
+        
+    ELSE
+        RAISE EXCEPTION 'A área de ID % não existe.', a_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
 
 
 ---------------------Inserção de dados no banco-----------------------

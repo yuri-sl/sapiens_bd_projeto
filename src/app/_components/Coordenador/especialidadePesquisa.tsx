@@ -2,17 +2,19 @@
 
 import { api } from "~/trpc/react";
 import { useState } from "react";
-import DeleteArea from "./deleteArea";
-import AddNewArea from "./addArea";
-import EditArea from "./editArea";
+import DeleteEspecialidade from "./deleteEspecialidade";
+import AddNewEspecialidade from "./addEspecialidade";
+import EditEspecialidade from "./editEspecialidade";
 
-export default function AreaPesquisa() {
-  const { data: areas, isLoading, refetch} = api.area.listarAreas.useQuery();
+export default function EspecialidadePesquisa() {
+  const { data: areas, isLoading, refetch} = api.area.listarAreasView.useQuery();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [areaSelecionada, setAreaSelecionada] = useState<any>(null);
+  const [especialidadeSelecionada, setEspecialidadeSelecionada] = useState<any>(null);
+
   
+
   const handleDelete = () => {
     setShowRemoveModal(false);
     refetch();
@@ -31,41 +33,42 @@ export default function AreaPesquisa() {
 
   return (
     <div className="max-h-[500px] overflow-y-auto">
-      <h1 className="text-cyan-600 font-bold text-4xl">Áreas de pesquisas do departamento</h1>
+      <h1 className="text-cyan-600 font-bold text-4xl">Especialidades de pesquisas do departamento</h1>
       <table className="w-full border-4 border-solid border-black">
         <thead className="mx-auto w-5 table-auto border-collapse bg-gray-200 shadow-md">
           <tr className="w-max bg-blue-500 px-8">
             <th className="px-4 py-4 text-left text-white" colSpan={2}>
-              Áreas de pesquisas do departamento
+              Especialidades de pesquisas do departamento
             </th>
             <th colSpan={3}>
-              <button
+              <button 
                 onClick={() => setShowCreateModal(true)}
                 className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700"
               >
-                Adicionar nova área
+                Adicionar nova especialidade
               </button>
             </th>
           </tr>
           <tr>
             <th className="px-4 py-2">Id Area</th>
             <th className="px-4 py-2">Área</th>
-
-            <th className="px-4 py-2" colSpan={3}>
+            <th className="px-4 py-2">Especialização</th>
+            <th className="px-4 py-2" colSpan={2}>
               Ações
             </th>
           </tr>
         </thead>
         <tbody>
-          {areas?.map((a) => (
-            <tr key={a.idarea} className="text-center">
-              <td className="px-4 py-2">{a.idarea}</td>
-              <td className="px-4 py-2">{a.nomearea}</td>
+          {areas?.map((e) => (
+            <tr key={`${e.idarea}-${e.idespecialidade}`} className="text-center">
+              <td className="px-4 py-2">{e.idarea}</td>
+              <td className="px-4 py-2">{e.nomearea}</td>
+              <td className="px-4 py-2">{e.nomeespecialidade}</td>
               <td className="px-4 py-2">
                 <button 
                   onClick={() => {
                     setShowEditModal(true);
-                    setAreaSelecionada(a);
+                    setEspecialidadeSelecionada(e);
                   }}
                 >
                   <img
@@ -78,7 +81,7 @@ export default function AreaPesquisa() {
               <td className="px-4 py-2">
                 <button 
                   onClick={() => {
-                    setAreaSelecionada(a);
+                    setEspecialidadeSelecionada(e);
                     setShowRemoveModal(true);
                   }} 
                   title="Deletar"
@@ -95,28 +98,27 @@ export default function AreaPesquisa() {
         </tbody>
       </table>
 
-      {showRemoveModal && areaSelecionada && (
-        <DeleteArea
-          nomeArea={areaSelecionada.nomearea}
-          idArea={areaSelecionada.idarea}
+      {showRemoveModal && especialidadeSelecionada && (
+        <DeleteEspecialidade
+          nomeEspecialidade={especialidadeSelecionada.nomeespecialidade}
+          idEspecialidade={especialidadeSelecionada.idespecialidade}
           onClose={() => setShowRemoveModal(false)}
           onConfirm={handleDelete}
         />
       )}
 
-
       {showCreateModal && (
-        <AddNewArea
+        <AddNewEspecialidade 
           onClose={() => setShowCreateModal(false)}
           onConfirm={handleCreate}
         />
       )}
 
-      {showEditModal && areaSelecionada && (
-        <EditArea 
+      {showEditModal && especialidadeSelecionada && (
+        <EditEspecialidade 
           onClose={() => setShowEditModal(false)}
           onConfirm={handleUpdate}
-          area={areaSelecionada}
+          especialidade={especialidadeSelecionada}
         />
       )}
     </div>

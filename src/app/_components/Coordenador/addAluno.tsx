@@ -27,7 +27,7 @@ export default function AddNewAluno({ onClose }: { onClose: () => void }) {
       idpesquisa: null,
       idbolsa: null,
       fotousuario: foto,
-        });
+    });
 
     onClose();
   };
