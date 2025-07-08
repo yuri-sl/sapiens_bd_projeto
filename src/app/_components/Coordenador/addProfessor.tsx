@@ -16,6 +16,7 @@ export default function AddNewProfessor({ onClose }: { onClose: () => void }) {
   const [titulo, setTitulo] = useState("");
   const [cargaHoraria, setCargaHoraria] = useState("");
   const [foto, setFoto] = useState<string | null>(null);
+  const [idArea, setIdArea] = useState(0);
   
 
   const handleSubmit = () => {
@@ -28,6 +29,7 @@ export default function AddNewProfessor({ onClose }: { onClose: () => void }) {
       titulo,
       cargaHoraria: parseInt(cargaHoraria),
       fotousuario: foto,
+      idArea,
     });
   };
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,6 +77,9 @@ export default function AddNewProfessor({ onClose }: { onClose: () => void }) {
 
             <label>Carga Horária</label>
             <input value={cargaHoraria} onChange={(e) => setCargaHoraria(e.target.value)} className="bg-gray-100 p-2 rounded" />
+
+            <label>ID de Área de Atuação</label>
+            <input value={idArea} onChange={(e) => setIdArea(Number(e.target.value))} className="bg-gray-100 p-2 rounded" />
 
             <label>Foto (opcional)</label>
             <input type="file" accept="image/*" onChange={handleFileChange} />

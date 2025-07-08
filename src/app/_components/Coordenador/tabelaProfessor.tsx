@@ -70,7 +70,7 @@ export default function ProfessorTabela() {
               <td className="px-4 py-2">{u.email}</td>
               <td className="px-4 py-2">{u.senha}</td>
               <td className="px-4 py-2">{u.titulo}</td>
-              <td className="px-4 py-2">{u.areaPesquisa}</td>
+              <td className="px-4 py-2">{u.nomearea}</td>
               <td className="px-4 py-2">{u.cargahoraria}</td>
               <td className="px-4 py-2">
                 <button
