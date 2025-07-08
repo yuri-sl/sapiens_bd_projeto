@@ -4,6 +4,7 @@ import { departamentoRouter } from "./routers/departamento";
 import { usuarioRouter } from "./routers/usuario";
 import { authRouter } from "./routers/auth";
 import { areaRouter } from "./routers/area";
+import { pesquisaRouter } from "./routers/pesquisa";
 
 /**
  * This is the primary router for your server.
@@ -14,7 +15,8 @@ export const appRouter = createTRPCRouter({
   departamento: departamentoRouter,
   usuario: usuarioRouter,
   auth: authRouter,
-  area: areaRouter
+  area: areaRouter,
+  pesquisa: pesquisaRouter
 });
 
 // export type definition of API
