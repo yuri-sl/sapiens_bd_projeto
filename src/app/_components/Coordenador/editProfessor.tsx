@@ -9,6 +9,7 @@ interface Professor {
   senha: string;
   titulo: string;
   cargaHoraria?: number;
+  idarea: number;
 }
 
 interface Props {
@@ -27,6 +28,7 @@ export default function EditProfessor({ onClose, professor }: Props) {
   const [titulo, setTitulo] = useState("");
   const [cargaHoraria, setCargaHoraria] = useState("");
   const [foto, setFoto] = useState<ArrayBuffer | null>(null);
+  const [idArea, setIdArea] = useState(0);
 
   const handleSubmit = () => {
     const carga = parseInt(cargaHoraria);
@@ -34,6 +36,11 @@ export default function EditProfessor({ onClose, professor }: Props) {
       alert("Carga Horária inválida. Insira um número válido.");
       return;
     }
+    // if (professor.idarea == null) {
+    //     alert("Erro: professor.idarea está nulo!");
+    //     return;
+    // }
+  
     atualizarProfessor.mutate(
       {
         matricula: parseInt(matricula),
@@ -44,6 +51,8 @@ export default function EditProfessor({ onClose, professor }: Props) {
         titulo,
         cargaHoraria: carga,
         fotousuario: foto ? Buffer.from(foto).toString("base64") : null,
+        idAreaAntiga: professor.idarea,
+        idAreaNova: idArea,
       },
       {
         onSuccess: () => {
@@ -70,6 +79,7 @@ export default function EditProfessor({ onClose, professor }: Props) {
     setMatricula(professor.matricula.toString());
     setTitulo(professor.titulo);
     setCargaHoraria(professor.cargaHoraria?.toString() || "");
+    setIdArea(professor.idarea);
   }, [professor]);
 
   return (
@@ -101,6 +111,9 @@ export default function EditProfessor({ onClose, professor }: Props) {
 
             <label>Carga Horária</label>
             <input value={cargaHoraria} onChange={(e) => setCargaHoraria(e.target.value)} className="bg-gray-100 p-2 rounded" />
+
+            <label>ID de Área de Atuação</label>
+            <input value={idArea ?? 0} onChange={(e) => setIdArea(Number(e.target.value))} className="bg-gray-100 p-2 rounded" />
 
             <label>Foto (opcional)</label>
             <input type="file" accept="image/*" onChange={handleFileChange} />

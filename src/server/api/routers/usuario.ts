@@ -155,34 +155,63 @@ export const usuarioRouter = createTRPCRouter({
     titulo: z.string(),
     cargaHoraria: z.number(),
     fotousuario: z.string().nullable().optional(),
+    idAreaAntiga: z.number().nullable().optional(),
+    idAreaNova: z.number().nullable().optional()
   }))
   .mutation(async ({ input, ctx }) => {
-    try {
-      const fotoBufferProf = input.fotousuario ? Buffer.from(input.fotousuario,"base64") : null
-      await ctx.db.$executeRawUnsafe(`
-        SELECT atualizar_professor(
-          $1::INT,
-          $2::VARCHAR,
-          $3::VARCHAR,
-          $4::VARCHAR,
-          $5::VARCHAR,
-          $6::VARCHAR,
-          $7::INT,
-          $8::BYTEA
-        )
-      `,
-        input.matricula,
-        input.nome,
-        input.cpf,
-        input.email,
-        input.senha,
-        input.titulo,
-        input.cargaHoraria,
-        fotoBufferProf
-      );
-    } catch (error) {
-      console.error("Erro ao atualizar professor:", error);
-      throw new Error("Falha ao atualizar os dados do professor.");
+    const fotoBufferProf = input.fotousuario ? Buffer.from(input.fotousuario,"base64") : undefined;
+    
+    // atualizações em Usuário e Professor
+    await ctx.db.usuario.update({
+      where: { matricula: input.matricula },
+      data: {
+        nome: input.nome,
+        cpf: input.cpf,
+        email: input.email,
+        senha: input.senha,
+        fotousuario: fotoBufferProf,
+      },
+    });
+
+    await ctx.db.professor.update({
+      where: { idusuario: input.matricula },
+      data: {
+        titulo: input.titulo,
+        cargahoraria: input.cargaHoraria,
+      },
+    });
+    
+    // Verificando aqui se a área de ID idAreaNova existe
+    if (input.idAreaNova != null) {
+      const novaAreaExiste = await ctx.db.area.findUnique({
+        where: {
+          idarea: input.idAreaNova,
+        },
+      });
+
+      if (!novaAreaExiste) {
+        throw new Error(`Área com ID ${input.idAreaNova} não existe!`);
+      }
+    
+      // Se a área procurada existe, então apago vínculo antigo e coloco o novo
+
+      if (input.idAreaAntiga != null) {
+        await ctx.db.atuar.delete({
+          where: {
+            idarea_idprofessor: {
+              idarea: input.idAreaAntiga,
+              idprofessor: input.matricula,
+            },
+          },
+        });
+      }
+      
+      await ctx.db.atuar.create({
+        data: {
+          idarea: input.idAreaNova,
+          idprofessor: input.matricula,
+        },
+      });
     }
   }),
   atualizarAlunoProcedure: publicProcedure
@@ -247,3 +276,48 @@ export const usuarioRouter = createTRPCRouter({
     }
   }),
 });
+
+
+
+// atualizarProfessorProcedure: publicProcedure
+//   .input(z.object({
+//     matricula: z.number(),
+//     nome: z.string(),
+//     cpf: z.string(),
+//     email: z.string().email(),
+//     senha: z.string(),
+//     titulo: z.string(),
+//     cargaHoraria: z.number(),
+//     fotousuario: z.string().nullable().optional(),
+//     idAreaAntiga: z.number(),
+//     idAreaNova: z.number()
+//   }))
+//   .mutation(async ({ input, ctx }) => {
+//     try {
+//       const fotoBufferProf = input.fotousuario ? Buffer.from(input.fotousuario,"base64") : null
+//       await ctx.db.$executeRawUnsafe(`
+//         SELECT atualizar_professor(
+//           $1::INT,
+//           $2::VARCHAR,
+//           $3::VARCHAR,
+//           $4::VARCHAR,
+//           $5::VARCHAR,
+//           $6::VARCHAR,
+//           $7::INT,
+//           $8::BYTEA
+//         )
+//       `,
+//         input.matricula,
+//         input.nome,
+//         input.cpf,
+//         input.email,
+//         input.senha,
+//         input.titulo,
+//         input.cargaHoraria,
+//         fotoBufferProf
+//       );
+//     } catch (error) {
+//       console.error("Erro ao atualizar professor:", error);
+//       throw new Error("Falha ao atualizar os dados do professor.");
+//     }
+//   }),
