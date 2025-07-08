@@ -96,19 +96,39 @@ export const usuarioRouter = createTRPCRouter({
     senha: z.string(),
     titulo: z.string(),
     cargaHoraria: z.number(),
+    fotousuario: z.string().nullable().optional(),
   }))
   .mutation(async ({ input, ctx }) => {
-    await ctx.db.$executeRaw`
-      SELECT cadastrar_professor(
-        ${input.matricula},
-        ${input.nome},
-        ${input.cpf},
-        ${input.email},
-        ${input.senha},
-        ${input.titulo},
-        ${input.cargaHoraria}
-      )
-    `;
+    try {
+      const fotoBuffer = input.fotousuario
+      ? Buffer.from(input.fotousuario, "base64")
+      : null;
+      await ctx.db.$executeRawUnsafe(`
+        SELECT cadastrar_professor(
+          $1::INT,
+          $2::VARCHAR,
+          $3::VARCHAR,
+          $4::VARCHAR,
+          $5::VARCHAR,
+          $6::VARCHAR,
+          $7::INT,
+          $8::BYTEA
+
+        )
+      `,
+        input.matricula,
+        input.nome,
+        input.cpf,
+        input.email,
+        input.senha,
+        input.titulo,
+        input.cargaHoraria,
+        fotoBuffer
+      );
+    } catch (error) {
+      console.error("Erro ao cadastrar professor:", error);
+      throw new Error("Erro ao cadastrar professor.");
+    }
   }),
   deletarAluno: publicProcedure
   .input(z.object({ matricula: z.number() }))
@@ -131,6 +151,46 @@ export const usuarioRouter = createTRPCRouter({
     await ctx.db.usuario.delete({
       where: { matricula: input.matricula },
     });
+  }),
+  atualizarProfessorProcedure: publicProcedure
+  .input(z.object({
+    matricula: z.number(),
+    nome: z.string(),
+    cpf: z.string(),
+    email: z.string().email(),
+    senha: z.string(),
+    titulo: z.string(),
+    cargaHoraria: z.number(),
+    fotousuario: z.string().nullable().optional(),
+  }))
+  .mutation(async ({ input, ctx }) => {
+    try {
+      const fotoBufferProf = input.fotousuario ? Buffer.from(input.fotousuario,"base64") : null
+      await ctx.db.$executeRawUnsafe(`
+        SELECT atualizar_professor(
+          $1::INT,
+          $2::VARCHAR,
+          $3::VARCHAR,
+          $4::VARCHAR,
+          $5::VARCHAR,
+          $6::VARCHAR,
+          $7::INT,
+          $8::BYTEA
+        )
+      `,
+        input.matricula,
+        input.nome,
+        input.cpf,
+        input.email,
+        input.senha,
+        input.titulo,
+        input.cargaHoraria,
+        fotoBufferProf
+      );
+    } catch (error) {
+      console.error("Erro ao atualizar professor:", error);
+      throw new Error("Falha ao atualizar os dados do professor.");
+    }
   }),
   atualizarAlunoProcedure: publicProcedure
   .input(z.object({
@@ -163,10 +223,34 @@ export const usuarioRouter = createTRPCRouter({
       },
     });
   }),
+  atualizarUsuarioProcedure: publicProcedure
+  .input(z.object({
+    matricula: z.number(),
+    nome: z.string(),
+    cpf: z.string(),
+    email: z.string().email(),
+    senha: z.string(),
+    fotousuario: z.string().nullable().optional(),
+  }))
+  .mutation(async ({ input, ctx }) => {
+    try {
+      const fotoBufferUsuario = input.fotousuario
+        ? Buffer.from(input.fotousuario, "base64")
+        : null;
 
-
-
-
-
-
+      await ctx.db.usuario.update({
+        where: { matricula: input.matricula },
+        data: {
+          nome: input.nome,
+          cpf: input.cpf,
+          email: input.email,
+          senha: input.senha,
+          fotousuario: fotoBufferUsuario ?? undefined, // evita sobrescrever com null se não enviado
+        },
+      });
+    } catch (error) {
+      console.error("Erro ao atualizar usuário:", error);
+      throw new Error("Falha ao atualizar os dados do usuário.");
+    }
+  }),
 });

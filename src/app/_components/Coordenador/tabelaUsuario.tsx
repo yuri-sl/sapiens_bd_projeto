@@ -1,15 +1,22 @@
 import { api } from "~/trpc/react";
 import { useState } from "react";
+import EditUsuario from "./editUsuario";
+import RemoveUsuario from "./deleteUsuario";
 
 export default function UsuarioPage() {
   const { data: usuarios, isLoading } = api.usuario.getAll.useQuery();
   const createUsuario = api.usuario.create.useMutation();
-
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [matricula, setmatricula] = useState("");
+  const [showEditModal,setShowEditModal] = useState(false);
+  const [showRemoveModal,setShowRemoveModal] = useState(false);
+  const [usuarioSelecionado, setUsuarioSelecionado] = useState<any>(null);
+
+
+
 
   const handleSubmit = () => {
     createUsuario.mutate({
@@ -68,16 +75,27 @@ export default function UsuarioPage() {
               <td className="px-4 py-2">{u.email}</td>
               <td className="px-4 py-2">{u.senha}</td>
               <td className="px-4 py-2">
-                <button onClick={() => editar(u.matricula)}>
-                  <img
-                    src="/assets/edit.png"
-                    alt="Editar"
-                    className="h-10 w-10 cursor-pointer transition hover:opacity-70"
-                  />
-                </button>
+              <button
+                onClick={() => {
+                  setUsuarioSelecionado(u);
+                  setShowEditModal(true);
+                }}
+              >
+                <img
+                  src="/assets/edit.png"
+                  alt="Editar"
+                  className="h-10 w-10 cursor-pointer transition hover:opacity-70"
+                />
+              </button>
               </td>
               <td className="px-4 py-2">
-                <button onClick={() => deletar(d.ID_Dep)} title="Deletar">
+              <button
+                  onClick={() => {
+                    setUsuarioSelecionado(u);
+                    setShowRemoveModal(true);
+                  }}
+                  title="Deletar"
+                >
                   <img
                     src="/assets/Trash 2.png"
                     alt="Ícone de deletar"
@@ -89,6 +107,25 @@ export default function UsuarioPage() {
           ))}
         </tbody>
       </table>
+      {showEditModal && usuarioSelecionado && (
+        <EditUsuario
+          usuario={usuarioSelecionado}
+          onClose={() => {
+            setShowEditModal(false);
+            setUsuarioSelecionado(null);
+          }}
+        />
+      )}
+
+      {showRemoveModal && usuarioSelecionado && (
+        <RemoveUsuario
+          usuario={usuarioSelecionado}
+          onClose={() => {
+            setShowRemoveModal(false);
+            setUsuarioSelecionado(null);
+          }}
+        />
+      )}
     </div>
   );
 }

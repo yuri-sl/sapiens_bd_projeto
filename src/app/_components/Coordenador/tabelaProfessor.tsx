@@ -2,42 +2,33 @@ import { api } from "~/trpc/react";
 import { useState } from "react";
 import AddNewProfessor from "./addProfessor";
 import RemoveProfessor from "./deleteProfessor";
+import EditProfessor from "./editProfessor";
 
 export default function ProfessorTabela() {
   const createUsuario = api.usuario.create.useMutation();
-  const { data: professores, isLoading } = api.usuario.listarProfessoresView.useQuery();
+  const {
+    data: professores,
+    isLoading,
+    refetch
+  } = api.usuario.listarProfessoresView.useQuery();
 
-  const [nome, setNome] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [matricula, setMatricula] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [professorSelecionado, setProfessorSelecionado] = useState<any>(null);
 
   const handleDelete = async () => {
     if (!professorSelecionado) return;
-    await deletarProfessor.mutateAsync({ matricula: professorSelecionado.matricula });
+    await api.usuario.deletarProfessor.useMutation().mutateAsync({
+      matricula: professorSelecionado.matricula,
+    });
     setShowRemoveModal(false);
     refetch();
   };
 
-
-
-  const handleSubmit = () => {
-    createUsuario.mutate({
-      nome,
-      cpf,
-      email,
-      senha,
-      matricula: parseInt(matricula),
-    });
-    setNome("");
-    setCpf("");
-    setEmail("");
-    setSenha("");
-    setMatricula("");
+  const handleEditConfirm = () => {
+    setShowEditModal(false);
+    refetch();
   };
 
   return (
@@ -46,13 +37,13 @@ export default function ProfessorTabela() {
       <table className="w-full border-4 border-solid border-black">
         <thead className="bg-blue-500 text-white">
           <tr>
-            <th className="px-4 py-4 text-left" colSpan={7}>
+            <th className="px-4 py-4 text-left" colSpan={8}>
               Professores cadastrados no departamento
             </th>
             <th colSpan={2}>
               <button
-              onClick={() => setShowModal(true)}
-              className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700"
+                onClick={() => setShowModal(true)}
+                className="cursor-pointer rounded-md bg-green-600 px-5 py-2 text-white hover:bg-green-700"
               >
                 Adicionar novo professor
               </button>
@@ -67,9 +58,7 @@ export default function ProfessorTabela() {
             <th className="px-4 py-2">Título</th>
             <th className="px-4 py-2">Área de Atuação</th>
             <th className="px-4 py-2">Carga Horária</th>
-            <th className="px-4 py-2" colSpan={2}>
-              Ações
-            </th>
+            <th className="px-4 py-2" colSpan={2}>Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -81,9 +70,16 @@ export default function ProfessorTabela() {
               <td className="px-4 py-2">{u.email}</td>
               <td className="px-4 py-2">{u.senha}</td>
               <td className="px-4 py-2">{u.titulo}</td>
+              <td className="px-4 py-2">{u.areaPesquisa}</td>
               <td className="px-4 py-2">{u.cargaHoraria}</td>
               <td className="px-4 py-2">
-                <button onClick={() => editar(u.matricula)}>
+                <button
+                  onClick={() => {
+                    setProfessorSelecionado(u);
+                    setShowEditModal(true);
+                  }}
+                  title="Editar"
+                >
                   <img
                     src="/assets/edit.png"
                     alt="Editar"
@@ -92,7 +88,7 @@ export default function ProfessorTabela() {
                 </button>
               </td>
               <td className="px-4 py-2">
-              <button
+                <button
                   onClick={() => {
                     setProfessorSelecionado(u);
                     setShowRemoveModal(true);
@@ -110,15 +106,30 @@ export default function ProfessorTabela() {
           ))}
         </tbody>
       </table>
-    {showModal && <AddNewProfessor onClose={() => setShowModal(false)} />}
-    {showRemoveModal && professorSelecionado && (
-  <RemoveProfessor
-    nomeProfessor={professorSelecionado.nome}
-    matricula={professorSelecionado.matricula}
-    onClose={() => setShowRemoveModal(false)}
-    onConfirm={handleDelete}
-  />
-)}
+
+      {showModal && (
+        <AddNewProfessor onClose={() => {
+          setShowModal(false);
+          refetch();
+        }} />
+      )}
+
+      {showRemoveModal && professorSelecionado && (
+        <RemoveProfessor
+          nomeProfessor={professorSelecionado.nome}
+          matricula={professorSelecionado.matricula}
+          onClose={() => setShowRemoveModal(false)}
+          onConfirm={handleDelete}
+        />
+      )}
+
+      {showEditModal && professorSelecionado && (
+        <EditProfessor
+          professor={professorSelecionado}
+          onClose={() => setShowEditModal(false)}
+        />
+
+      )}
     </div>
   );
 }
