@@ -5,7 +5,6 @@ import RemoveProfessor from "./deleteProfessor";
 import EditProfessor from "./editProfessor";
 
 export default function ProfessorTabela() {
-  const createUsuario = api.usuario.create.useMutation();
   const {
     data: professores,
     isLoading,
@@ -19,9 +18,9 @@ export default function ProfessorTabela() {
 
   const handleDelete = async () => {
     if (!professorSelecionado) return;
-    await api.usuario.deletarProfessor.useMutation().mutateAsync({
-      matricula: professorSelecionado.matricula,
-    });
+    // await api.usuario.deletarProfessor.useMutation().mutateAsync({
+    //   matricula: professorSelecionado.matricula,  // ESTE TRECHO ESTÁ DANDO ERRO DE "INVALID HOOK CALL", 
+    // });                                           // POIS UM HOOK REACT NÃO PODE SER CHAMADO DENTRO DE UMA FUNÇÃO COMO ESSA!!!
     setShowRemoveModal(false);
     refetch();
   };
@@ -70,7 +69,7 @@ export default function ProfessorTabela() {
               <td className="px-4 py-2">{u.email}</td>
               <td className="px-4 py-2">{u.senha}</td>
               <td className="px-4 py-2">{u.titulo}</td>
-              <td className="px-4 py-2">{u.areaPesquisa}</td>
+              <td className="px-4 py-2">{u.nomearea}</td>
               <td className="px-4 py-2">{u.cargahoraria}</td>
               <td className="px-4 py-2">
                 <button
@@ -126,7 +125,10 @@ export default function ProfessorTabela() {
       {showEditModal && professorSelecionado && (
         <EditProfessor
           professor={professorSelecionado}
-          onClose={() => setShowEditModal(false)}
+          onClose={() => {
+            setShowEditModal(false);
+            refetch();
+          }}
         />
 
       )}

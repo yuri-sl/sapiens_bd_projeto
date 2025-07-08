@@ -97,34 +97,27 @@ export const usuarioRouter = createTRPCRouter({
     titulo: z.string(),
     cargaHoraria: z.number(),
     fotousuario: z.string().nullable().optional(),
+    idArea: z.number(),
   }))
   .mutation(async ({ input, ctx }) => {
     try {
       const fotoBuffer = input.fotousuario
       ? Buffer.from(input.fotousuario, "base64")
       : null;
-      await ctx.db.$executeRawUnsafe(`
-        SELECT cadastrar_professor(
-          $1::INT,
-          $2::VARCHAR,
-          $3::VARCHAR,
-          $4::VARCHAR,
-          $5::VARCHAR,
-          $6::VARCHAR,
-          $7::INT,
-          $8::BYTEA
+      await ctx.db.$executeRaw`
+      SELECT cadastrar_professor(
+        ${input.matricula}::INT,
+        ${input.nome}::VARCHAR,
+        ${input.cpf}::VARCHAR,
+        ${input.email}::VARCHAR,
+        ${input.senha}::VARCHAR,
+        ${input.titulo}::VARCHAR,
+        ${input.cargaHoraria}::INT,
+        ${fotoBuffer}::BYTEA,
+        ${input.idArea}::INT
+      )
+    `;
 
-        )
-      `,
-        input.matricula,
-        input.nome,
-        input.cpf,
-        input.email,
-        input.senha,
-        input.titulo,
-        input.cargaHoraria,
-        fotoBuffer
-      );
     } catch (error) {
       console.error("Erro ao cadastrar professor:", error);
       throw new Error("Erro ao cadastrar professor.");
@@ -144,6 +137,28 @@ export const usuarioRouter = createTRPCRouter({
   deletarProfessor: publicProcedure
   .input(z.object({ matricula: z.number() }))
   .mutation(async ({ ctx, input }) => {
+    // DELETES NECESSÁRIO PARA NÃO OCORRER ERRO DE CAHAVE ESTRANGEIRAS DE TABELA COM FKS DE PROFESSOR
+    await ctx.db.atuar.deleteMany({
+      where: { idprofessor: input.matricula }
+    });
+
+    await ctx.db.realiza.deleteMany({
+      where: { idprofessor: input.matricula }
+    });
+
+    await ctx.db.solicita_pesquisa.deleteMany({
+      where: { idprofessor: input.matricula }
+    });
+
+    await ctx.db.coordenador.deleteMany({
+      where: { idusuario: input.matricula }
+    });
+
+    await ctx.db.pertence.deleteMany({
+      where: { matricula: input.matricula }
+    });
+
+    // AGORA SIM POSSO DELETÁ-LO DA TABELA DE PROFESSOR E DE USUÁRIO
     await ctx.db.professor.delete({
       where: { idusuario: input.matricula },
     });
@@ -162,34 +177,63 @@ export const usuarioRouter = createTRPCRouter({
     titulo: z.string(),
     cargaHoraria: z.number(),
     fotousuario: z.string().nullable().optional(),
+    idAreaAntiga: z.number().nullable().optional(),
+    idAreaNova: z.number().nullable().optional()
   }))
   .mutation(async ({ input, ctx }) => {
-    try {
-      const fotoBufferProf = input.fotousuario ? Buffer.from(input.fotousuario,"base64") : null
-      await ctx.db.$executeRawUnsafe(`
-        SELECT atualizar_professor(
-          $1::INT,
-          $2::VARCHAR,
-          $3::VARCHAR,
-          $4::VARCHAR,
-          $5::VARCHAR,
-          $6::VARCHAR,
-          $7::INT,
-          $8::BYTEA
-        )
-      `,
-        input.matricula,
-        input.nome,
-        input.cpf,
-        input.email,
-        input.senha,
-        input.titulo,
-        input.cargaHoraria,
-        fotoBufferProf
-      );
-    } catch (error) {
-      console.error("Erro ao atualizar professor:", error);
-      throw new Error("Falha ao atualizar os dados do professor.");
+    const fotoBufferProf = input.fotousuario ? Buffer.from(input.fotousuario,"base64") : undefined;
+    
+    // atualizações em Usuário e Professor
+    await ctx.db.usuario.update({
+      where: { matricula: input.matricula },
+      data: {
+        nome: input.nome,
+        cpf: input.cpf,
+        email: input.email,
+        senha: input.senha,
+        fotousuario: fotoBufferProf,
+      },
+    });
+
+    await ctx.db.professor.update({
+      where: { idusuario: input.matricula },
+      data: {
+        titulo: input.titulo,
+        cargahoraria: input.cargaHoraria,
+      },
+    });
+    
+    // Verificando aqui se a área de ID idAreaNova existe
+    if (input.idAreaNova != null) {
+      const novaAreaExiste = await ctx.db.area.findUnique({
+        where: {
+          idarea: input.idAreaNova,
+        },
+      });
+
+      if (!novaAreaExiste) {
+        throw new Error(`Área com ID ${input.idAreaNova} não existe!`);
+      }
+    
+      // Se a área procurada existe, então apago vínculo antigo e coloco o novo
+
+      if (input.idAreaAntiga != null) {
+        await ctx.db.atuar.delete({
+          where: {
+            idarea_idprofessor: {
+              idarea: input.idAreaAntiga,
+              idprofessor: input.matricula,
+            },
+          },
+        });
+      }
+      
+      await ctx.db.atuar.create({
+        data: {
+          idarea: input.idAreaNova,
+          idprofessor: input.matricula,
+        },
+      });
     }
   }),
   atualizarAlunoProcedure: publicProcedure
@@ -254,3 +298,48 @@ export const usuarioRouter = createTRPCRouter({
     }
   }),
 });
+
+
+
+// atualizarProfessorProcedure: publicProcedure
+//   .input(z.object({
+//     matricula: z.number(),
+//     nome: z.string(),
+//     cpf: z.string(),
+//     email: z.string().email(),
+//     senha: z.string(),
+//     titulo: z.string(),
+//     cargaHoraria: z.number(),
+//     fotousuario: z.string().nullable().optional(),
+//     idAreaAntiga: z.number(),
+//     idAreaNova: z.number()
+//   }))
+//   .mutation(async ({ input, ctx }) => {
+//     try {
+//       const fotoBufferProf = input.fotousuario ? Buffer.from(input.fotousuario,"base64") : null
+//       await ctx.db.$executeRawUnsafe(`
+//         SELECT atualizar_professor(
+//           $1::INT,
+//           $2::VARCHAR,
+//           $3::VARCHAR,
+//           $4::VARCHAR,
+//           $5::VARCHAR,
+//           $6::VARCHAR,
+//           $7::INT,
+//           $8::BYTEA
+//         )
+//       `,
+//         input.matricula,
+//         input.nome,
+//         input.cpf,
+//         input.email,
+//         input.senha,
+//         input.titulo,
+//         input.cargaHoraria,
+//         fotoBufferProf
+//       );
+//     } catch (error) {
+//       console.error("Erro ao atualizar professor:", error);
+//       throw new Error("Falha ao atualizar os dados do professor.");
+//     }
+//   }),

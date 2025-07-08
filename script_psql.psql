@@ -265,9 +265,13 @@ SELECT
   u.senha,
   u.fotousuario,
   p.titulo,
-  p.cargaHoraria
+  p.cargaHoraria,
+  a.idarea,
+  a.nomearea
 FROM usuario u
-JOIN professor p ON p.idusuario = u.matricula;
+JOIN professor p ON p.idusuario = u.matricula
+LEFT JOIN atuar at ON at.idprofessor = p.idusuario
+LEFT JOIN area a ON a.idarea = at.idarea;
 select * from vw_professores;
 
 CREATE OR REPLACE VIEW vw_area_esp AS
@@ -315,7 +319,9 @@ CREATE OR REPLACE FUNCTION cadastrar_professor(
     p_email VARCHAR,
     p_senha VARCHAR,
     p_titulo VARCHAR,
-    p_cargaHoraria INT
+    p_cargaHoraria INT,
+    p_fotousuario BYTEA,
+    p_idArea INT
 ) RETURNS VOID AS $$
 BEGIN
     INSERT INTO usuario (matricula, nome, cpf, email, senha)
@@ -323,6 +329,13 @@ BEGIN
 
     INSERT INTO professor (idusuario, titulo, cargaHoraria)
     VALUES (p_matricula, p_titulo, p_cargaHoraria);
+
+    IF EXISTS (
+        SELECT 1 FROM area WHERE idarea = p_idArea
+    ) THEN
+        INSERT INTO atuar (idarea, idprofessor)
+        VALUES (p_idArea, p_matricula);
+    END IF;
 END;
 $$ LANGUAGE plpgsql;
 
