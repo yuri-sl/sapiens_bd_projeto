@@ -1,4 +1,3 @@
-Here's a **complete `README.md`** template in **Portuguese** for your T3 Stack project (ready for GitHub), covering setup, environment variables, database configuration, and team collaboration:
 
 ---
 
@@ -16,7 +15,7 @@ Siga estas instruções para configurar o projeto localmente.
 - Node.js v18+  
 - Banco de dados Postgresql (ou Docker)  
 - Git  
-
+- Arquivo script_psql.psql (Script postgreSQL gerador do bancos de dados)
 ---
 
 ## **🛠 Configuração**  
