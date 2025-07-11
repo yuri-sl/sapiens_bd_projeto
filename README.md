@@ -1,13 +1,13 @@
 
 ---
 
-# **📌 Nome do Projeto**  
+# **Nome do Projeto**  
 
 *Uma aplicação moderna com Next.js, TypeScript, Prisma e tRPC*  
 
 ---
 
-## **🚀 Começando**  
+## **Começando**  
 
 Siga estas instruções para configurar o projeto localmente.  
 
@@ -93,7 +93,7 @@ Acesse: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## **📦 Estrutura do Projeto**  
+## **Estrutura do Projeto**  
 ```
 .
 ├── prisma/
@@ -113,19 +113,14 @@ Acesse: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## **🤝 Contribuição**  
+## ** Contribuição**  
 1. Crie uma branch: `git checkout -b feature/nova-funcionalidade`  
 2. Commit: `git commit -m "Adiciona recurso X"`  
 3. Push: `git push origin feature/nova-funcionalidade`  
 
 ---
 
-## **📄 Licença**  
-[MIT](https://choosealicense.com/licenses/mit/)  
-
----
-
-### **🔐 Segurança**  
+### **Segurança**  
 - **NUNCA** compartilhe o arquivo `.env` ou credenciais reais no repositório.  
 - Adicione `.env` ao `.gitignore`:  
   ```bash
@@ -134,13 +129,7 @@ Acesse: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-**Pronto para desenvolver!** 🎉  
 Para dúvidas, consulte a [documentação do T3 Stack](https://create.t3.gg/).  
 
----
+---  
 
-### **Como Personalizar**  
-- Substitua `nome-do-projeto`, `seu-usuario/nome-do-repo`, e credenciais de exemplo.  
-- Adicione seções extras (ex: testes, Docker, CI/CD) conforme necessário.  
-
-Quer que eu adapte algo específico para seu projeto? 😊
